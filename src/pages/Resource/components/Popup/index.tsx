@@ -31,8 +31,6 @@ const Popup = ({ fid, actionRef, visible, record, x, y }: PopupProps) => {
   const [folderModalVisible, setFolderModalVisible] = useState(false);
   const [fileModalVisible, setFileModalVisible] = useState(false);
 
-  console.log(record);
-
   return (
     <div className={styles.popup} style={{ left: `${x}px`, top: `${y}px` }}>
       {folderModalVisible && (

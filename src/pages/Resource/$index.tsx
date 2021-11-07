@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Tooltip } from 'antd';
+import { Breadcrumb, Card, Tooltip } from 'antd';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
 import {
   FileExcelOutlined,
@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import { history, request } from 'umi';
 import Popup, { PopupProps } from './components/Popup';
+import { formatSize } from '@/utils/utils';
 
 export type TableListItem = {
   key: number;
@@ -25,6 +26,12 @@ const iconMap = {
   xlsx: <FileExcelOutlined />,
   xls: <FileExcelOutlined />,
 };
+
+interface MenuProps {
+  name: string;
+  path: string;
+  children?: MenuProps[];
+}
 
 const columns: ProColumns<TableListItem>[] = [
   {
@@ -55,10 +62,11 @@ const columns: ProColumns<TableListItem>[] = [
     title: '大小',
     width: 100,
     dataIndex: 'size',
+    renderText: (text) => formatSize(text),
   },
   {
     title: '类型',
-    width: 200,
+    width: 100,
     dataIndex: 'extension',
   },
   {
@@ -85,6 +93,8 @@ interface ResourceProps {
 const Resource: React.ReactNode = ({ match }: ResourceProps) => {
   const { params: matchParams } = match;
   const ref = useRef<ActionType>();
+  const [menu, setMenu] = useState<MenuProps>();
+
   const [popup, setPopup] = useState<PopupProps>({
     fid: matchParams?.fid,
     actionRef: ref,
@@ -94,12 +104,70 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
     record: {},
   });
 
+  const getBreadcrumbs = async (fid: number) => {
+    if (fid) {
+      const response = await request('/api/folder/parents?fid=' + fid);
+      setMenu(response.data || {});
+    }
+  };
+
+  const renderSubBreadcrumb = (item: MenuProps) => {
+    return (
+      <>
+        <Breadcrumb.Item
+          key={item.path}
+          onClick={(e) => {
+            e.stopPropagation();
+            history.push({
+              pathname: item.path,
+            });
+          }}
+        >
+          <a href="javascript:void (0);">{item.name}</a>
+        </Breadcrumb.Item>
+        {item.children && item.children.map((sub) => renderSubBreadcrumb(sub))}
+      </>
+    );
+  };
+
+  const renderBreadcrumb = () => {
+    return (
+      <Breadcrumb>
+        <Breadcrumb.Item
+          key={'/'}
+          onClick={(e) => {
+            e.stopPropagation();
+            history.push({
+              pathname: '/',
+            });
+          }}
+        >
+          <a href="javascript:void (0);">我的</a>
+        </Breadcrumb.Item>
+        {menu && renderSubBreadcrumb(menu)}
+      </Breadcrumb>
+    );
+  };
+
   useEffect(() => {
     ref?.current?.reload();
+    getBreadcrumbs(matchParams?.fid);
   }, [matchParams]);
 
   return (
-    <PageContainer title={false}>
+    <PageContainer
+      title={false}
+      header={{
+        breadcrumbRender: (_, originBreadcrumb) => {
+          const fid = matchParams?.fid;
+          if (fid) {
+            return renderBreadcrumb();
+          }
+
+          return originBreadcrumb;
+        },
+      }}
+    >
       <Card
         onContextMenu={(event) => {
           event.preventDefault();
@@ -124,11 +192,9 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
           actionRef={ref}
           request={async (params, sorter, filter) => {
             // 表单搜索项会从 params 传入，传递给后端接口。
-            const response = await request('/api/resource', {
+            return await request('/api/resource', {
               params: { ...params, ...sorter, ...filter, fid: matchParams?.fid },
             });
-            console.log(response);
-            return response;
           }}
           pagination={false}
           onRow={(record) => {

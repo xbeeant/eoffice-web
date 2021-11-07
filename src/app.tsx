@@ -119,7 +119,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     subMenuItemRender: (item, dom) => (
       <a
         onClick={(e) => {
-          console.log('sub menu click');
           e.stopPropagation();
           history.push({
             pathname: item.path,
@@ -156,6 +155,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 
         return loopMenuItem(menus);
       },
+    },
+    breadcrumbProps: {
+      minLength: 1,
+      separator: '>',
     },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
