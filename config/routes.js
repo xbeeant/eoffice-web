@@ -21,12 +21,21 @@
   {
     path: '/res',
     name: 'welcome',
-    component: './Resource/$index',
-  },
-  {
-    path: '/res/:fid',
-    name: 'welcome',
-    component: './Resource/$index',
+    routes: [
+      {
+        path: '/res',
+        name: 'welcome',
+        component: './Resource/$index',
+      },
+      {
+        path: '/res/:fid',
+        component: './Resource/$index',
+      },
+      {
+        path: '/res/image/:rid',
+        component: './Resource/image',
+      },
+    ]
   },
   {
     path: '/latest',

@@ -8,6 +8,15 @@ export const getFileType = (filename: string) => {
   return '';
 };
 
+export const extension2path = (extension: string) => {
+  const pathmap = {
+    png: 'image',
+    jpeg: 'image',
+    jpg: 'image',
+  }
+  return pathmap[extension] || 'unknow';
+}
+
 export const isXmind = (file: RcFile) => {
   return file.type === 'application/vnd.xmind.workbook' || getFileType(file.name) === 'xmind';
 };

@@ -1,16 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Breadcrumb, Card, Tooltip } from 'antd';
+import { Breadcrumb, Card } from 'antd';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
 import {
   FileExcelOutlined,
   FileOutlined,
   FolderOutlined,
-  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import { history, request } from 'umi';
 import Popup, { PopupProps } from './components/Popup';
-import { formatSize } from '@/utils/utils';
+import { formatSize, extension2path } from '@/utils/utils';
 
 export type TableListItem = {
   key: number;
@@ -37,6 +36,9 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '文件名',
     dataIndex: 'name',
+    sorter: {
+      multiple: 1,
+    },
     render: (_, record) => (
       <>
         {iconMap[record.extension] || <FileOutlined />}
@@ -49,7 +51,8 @@ const columns: ProColumns<TableListItem>[] = [
                 });
                 break;
               default:
-                console.warn('no case');
+                window.open(`/res/${extension2path(record.extension)}/${record.key}`);
+                break;
             }
           }}
         >
@@ -61,28 +64,28 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '大小',
     width: 100,
+    sorter: {
+      multiple: 2,
+    },
     dataIndex: 'size',
     renderText: (text) => formatSize(text),
   },
   {
     title: '类型',
     width: 100,
+    sorter: {
+      multiple: 3,
+    },
     dataIndex: 'extension',
   },
   {
-    title: (
-      <>
-        更新时间
-        <Tooltip placement="top" title="这是一段描述">
-          <QuestionCircleOutlined style={{ marginLeft: 4 }} />
-        </Tooltip>
-      </>
-    ),
-    width: 140,
+    title: '更新时间',
+    width: 200,
     key: 'since',
-    dataIndex: 'createdAt',
-    valueType: 'date',
-    sorter: (a, b) => a.updateAt - b.updateAt,
+    dataIndex: 'updateAt',
+    sorter: {
+      multiple: 4,
+    },
   },
 ];
 
@@ -111,6 +114,7 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
     }
   };
 
+  // @ts-ignore
   const renderSubBreadcrumb = (item: MenuProps) => {
     return (
       <>
@@ -193,7 +197,7 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
           request={async (params, sorter, filter) => {
             // 表单搜索项会从 params 传入，传递给后端接口。
             return await request('/api/resource', {
-              params: { ...params, ...sorter, ...filter, fid: matchParams?.fid },
+              params: { ...params, sorter: JSON.stringify(sorter), ...filter, fid: matchParams?.fid },
             });
           }}
           pagination={false}

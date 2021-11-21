@@ -7,6 +7,7 @@ import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { BookOutlined, HistoryOutlined, HomeOutlined, LinkOutlined } from '@ant-design/icons';
+import {message} from "antd";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -18,7 +19,26 @@ export const initialStateConfig = {
 
 export const layoutActionRef = createRef<{ reload: () => void }>();
 
+const errorHandler = (error: { response: any }) => {
+  const { response } = error;
+  if (response && response.status) {
+    const { status, url } = response;
+
+    message.error(`请求错误 ${status}: ${url}`);
+    return { success: false, msg: '网络异常' };
+  }
+
+  if (response) {
+    message.error(response.msg);
+  } else {
+    message.error('网络异常');
+  }
+
+  return response;
+};
+
 export const request: RequestConfig = {
+  errorHandler,
   errorConfig: {
     adaptor: (resData) => {
       return {
