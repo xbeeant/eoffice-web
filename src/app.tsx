@@ -1,31 +1,30 @@
-import { createRef } from 'react';
-import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { PageLoading } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from 'umi';
-import { history, Link, request as requests, RequestConfig } from 'umi';
+import {createRef} from 'react';
+import type {MenuDataItem, Settings as LayoutSettings} from '@ant-design/pro-layout';
+import {PageLoading} from '@ant-design/pro-layout';
+import type {RequestConfig, RunTimeLayoutConfig} from 'umi';
+import {history, request as requests} from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import { BookOutlined, HistoryOutlined, HomeOutlined, LinkOutlined } from '@ant-design/icons';
+import {currentUser as queryCurrentUser, getPathmap} from './services/ant-design-pro/api';
+import {HistoryOutlined, HomeOutlined} from '@ant-design/icons';
 import {message} from "antd";
 
-const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
-  loading: <PageLoading />,
+  loading: <PageLoading/>,
 };
 
 export const layoutActionRef = createRef<{ reload: () => void }>();
 
 const errorHandler = (error: { response: any }) => {
-  const { response } = error;
+  const {response} = error;
   if (response && response.status) {
-    const { status, url } = response;
+    const {status, url} = response;
 
     message.error(`请求错误 ${status}: ${url}`);
-    return { success: false, msg: '网络异常' };
+    return {success: false, msg: '网络异常'};
   }
 
   if (response) {
@@ -57,6 +56,7 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  pathmap: object
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -67,6 +67,12 @@ export async function getInitialState(): Promise<{
     }
     return undefined;
   };
+  let pathmap = [];
+  const fetchPathmap = async () => {
+    const response = await getPathmap();
+    pathmap = response.data || [];
+  }
+  fetchPathmap();
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
@@ -74,38 +80,41 @@ export async function getInitialState(): Promise<{
       fetchUserInfo,
       currentUser,
       settings: {},
+      pathmap: pathmap,
     };
   }
+
   return {
     fetchUserInfo,
     settings: {},
+    pathmap: pathmap,
   };
 }
 
 const IconMap = {
-  home: <HomeOutlined />,
-  history: <HistoryOutlined />,
+  home: <HomeOutlined/>,
+  history: <HistoryOutlined/>,
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
-  menus.map(({ icon, children, ...item }) => ({
+  menus.map(({icon, children, ...item}) => ({
     ...item,
     icon: icon && IconMap[icon as string],
     children: children && loopMenuItem(children),
   }));
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
     actionRef: layoutActionRef,
-    rightContentRender: () => <RightContent />,
+    rightContentRender: () => <RightContent/>,
     disableContentMargin: false,
     waterMarkProps: {
       content: initialState?.currentUser?.name,
     },
-    footerRender: () => <Footer />,
+    footerRender: () => <Footer/>,
     onPageChange: () => {
-      const { location } = history;
+      const {location} = history;
       // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
@@ -140,7 +149,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       request: async () => {
         const response = await requests('/api/menu');
         let menus;
-        if (response.length === 0 ) {
+        if (response.length === 0) {
           console.log('no sub menus');
           menus = [
             {

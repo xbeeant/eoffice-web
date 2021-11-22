@@ -1,4 +1,4 @@
-import { RcFile } from 'antd/lib/upload/interface';
+import type {RcFile} from 'antd/lib/upload/interface';
 
 export const getFileType = (filename: string) => {
   const startIndex = filename.lastIndexOf('.');
@@ -7,28 +7,6 @@ export const getFileType = (filename: string) => {
   }
   return '';
 };
-
-export const extension2path = (extension: string) => {
-  const pathmap = {
-    png: 'image',
-    jpeg: 'image',
-    jpg: 'image',
-    apng: 'image',
-    avif: 'image',
-    bmp: 'image',
-    gif: 'image',
-    ico: 'image',
-    cur: 'image',
-    jfif: 'image',
-    pjpeg: 'image',
-    pjp: 'image',
-    svg: 'image',
-    tif: 'image',
-    tiff: 'image',
-    webp: 'image',
-  }
-  return pathmap[extension] || 'unknow';
-}
 
 export const isXmind = (file: RcFile) => {
   return file.type === 'application/vnd.xmind.workbook' || getFileType(file.name) === 'xmind';

@@ -1,6 +1,11 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import {request} from 'umi';
+
+
+export async function getPathmap() {
+  return request("/api/config/pathmap");
+}
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
