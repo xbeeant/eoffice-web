@@ -111,18 +111,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         history.push(loginPath);
       }
     },
-    links: isDev
-      ? [
-          <Link to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-          <Link to="/~docs">
-            <BookOutlined />
-            <span>业务组件文档</span>
-          </Link>,
-        ]
-      : [],
     menuHeaderRender: undefined,
     menuItemRender: (item, dom) => (
       <a
@@ -151,27 +139,50 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     menu: {
       request: async () => {
         const response = await requests('/api/menu');
-
-        const menus = [
-          {
-            path: '/',
-            name: 'welcome',
-            icon: 'home',
-            children: [
-              {
-                path: '/latest',
-                name: '最近',
-                icon: 'history',
-              },
-              {
-                path: '/res',
-                name: '我的',
-                icon: 'home',
-                children: response,
-              },
-            ],
-          },
-        ];
+        let menus;
+        if (response.length === 0 ) {
+          console.log('no sub menus');
+          menus = [
+            {
+              path: '/',
+              name: 'welcome',
+              icon: 'home',
+              children: [
+                {
+                  path: '/latest',
+                  name: '最近',
+                  icon: 'history',
+                },
+                {
+                  path: '/res',
+                  name: '我的',
+                  icon: 'home',
+                },
+              ],
+            },
+          ]
+        } else {
+          menus = [
+            {
+              path: '/',
+              name: 'welcome',
+              icon: 'home',
+              children: [
+                {
+                  path: '/latest',
+                  name: '最近',
+                  icon: 'history',
+                },
+                {
+                  path: '/res',
+                  name: '我的',
+                  icon: 'home',
+                  children: response,
+                },
+              ],
+            },
+          ];
+        }
 
         return loopMenuItem(menus);
       },

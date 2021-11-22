@@ -19,6 +19,16 @@
     ],
   },
   {
+    path: '/view/image/:rid',
+    layout: false,
+    component: './Resource/ImageView',
+  },
+  {
+    path: '/view/unknow/:rid',
+    layout: false,
+    component: './Resource/UnkownView',
+  },
+  {
     path: '/res',
     name: 'welcome',
     routes: [
@@ -30,10 +40,6 @@
       {
         path: '/res/:fid',
         component: './Resource/$index',
-      },
-      {
-        path: '/res/image/:rid',
-        component: './Resource/image',
       },
     ]
   },

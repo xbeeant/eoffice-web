@@ -13,6 +13,19 @@ export const extension2path = (extension: string) => {
     png: 'image',
     jpeg: 'image',
     jpg: 'image',
+    apng: 'image',
+    avif: 'image',
+    bmp: 'image',
+    gif: 'image',
+    ico: 'image',
+    cur: 'image',
+    jfif: 'image',
+    pjpeg: 'image',
+    pjp: 'image',
+    svg: 'image',
+    tif: 'image',
+    tiff: 'image',
+    webp: 'image',
   }
   return pathmap[extension] || 'unknow';
 }

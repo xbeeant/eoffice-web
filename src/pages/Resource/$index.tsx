@@ -51,7 +51,7 @@ const columns: ProColumns<TableListItem>[] = [
                 });
                 break;
               default:
-                window.open(`/res/${extension2path(record.extension)}/${record.key}`);
+                window.open(`/view/${extension2path(record.extension)}/${record.key}`);
                 break;
             }
           }}
@@ -154,6 +154,7 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
   };
 
   useEffect(() => {
+    console.log(matchParams);
     ref?.current?.reload();
     getBreadcrumbs(matchParams?.fid);
   }, [matchParams]);
