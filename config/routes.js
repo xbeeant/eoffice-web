@@ -18,21 +18,22 @@
       },
     ],
   },
+  // {
+  //   path: '/view/image/:rid',
+  //   layout: false,
+  //   component: './Resource/ImageView',
+  // },
   {
-    path: '/view/image/:rid',
+    path: '/view/pdf',
     layout: false,
-    component: './Resource/ImageView',
+    microApp: 'pdf',
   },
-  {
-    path: '/view/markdown/:rid',
-    layout: false,
-    component: './Resource/MarkdownView',
-  },
-  {
-    path: '/view/unknow/:rid',
-    layout: false,
-    component: './Resource/UnkownView',
-  },
+  //
+  // {
+  //   path: '/view/unknow/:rid',
+  //   layout: false,
+  //   component: './Resource/UnkownView',
+  // },
   {
     path: '/res',
     name: 'welcome',
@@ -46,7 +47,7 @@
         path: '/res/:fid',
         component: './Resource/$index',
       },
-    ]
+    ],
   },
   {
     path: '/latest',

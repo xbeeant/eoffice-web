@@ -54,4 +54,15 @@ export default defineConfig({
   mfsu: {},
   webpack5: {},
   exportStatic: {},
+  qiankun: {
+    master: {
+      // 注册子应用信息
+      apps: [
+        {
+          name: 'pdf', // 唯一 id
+          entry: '//localhost:8001', // html entry
+        },
+      ],
+    },
+  },
 });
