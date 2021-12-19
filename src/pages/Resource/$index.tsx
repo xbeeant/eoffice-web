@@ -77,7 +77,7 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
                   window.open(
                     `/view/${initialState?.pathmap[record.extension] || 'unkown'}/?rid=${
                       record.rid
-                    }&aid=${record.aid}`,
+                    }&sid=${record.sid}`,
                   );
                   break;
               }

@@ -1,10 +1,9 @@
 // @ts-ignore
 /* eslint-disable */
-import {request} from 'umi';
-
+import { request } from 'umi';
 
 export async function getPathmap() {
-  return request("/api/config/pathmap");
+  return request('/api/config/pathmap');
 }
 
 /** 获取当前的用户 GET /api/currentUser */
@@ -29,7 +28,7 @@ export async function outLogin(options?: { [key: string]: any }) {
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
   return request<API.LoginResult>('/api/auth/login', {
     method: 'POST',
-    requestType: "form",
+    requestType: 'form',
     data: body,
     ...(options || {}),
   });

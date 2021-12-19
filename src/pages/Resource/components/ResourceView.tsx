@@ -1,10 +1,7 @@
+const ResourceView = ({ location }) => {
+  console.log(location);
 
-const ResourceView = ({location}) => {
-    console.log(location);
-
-    return (
-      <div>sssss</div>
-    )
-}
+  return <div>sssss</div>;
+};
 
 export default ResourceView;

@@ -28,6 +28,11 @@
     layout: false,
     microApp: 'pdf',
   },
+  {
+    path: '/view/markdown',
+    layout: false,
+    microApp: 'markdown',
+  },
   //
   // {
   //   path: '/view/unknow/:rid',

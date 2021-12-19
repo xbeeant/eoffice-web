@@ -1,4 +1,4 @@
-import type {RcFile} from 'antd/lib/upload/interface';
+import type { RcFile } from 'antd/lib/upload/interface';
 
 export const getFileType = (filename: string) => {
   const startIndex = filename.lastIndexOf('.');

@@ -1,11 +1,11 @@
 // https://umijs.org/config/
-import { defineConfig } from 'umi';
+import {defineConfig} from 'umi';
 
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 
-const { REACT_APP_ENV } = process.env;
+const {REACT_APP_ENV} = process.env;
 
 export default defineConfig({
   hash: true,
@@ -46,12 +46,13 @@ export default defineConfig({
   ignoreMomentLocale: true,
   proxy: proxy[REACT_APP_ENV || 'dev'],
   manifest: {
-    basePath: '/',
+    basePath: '/e-office',
   },
+  publicPath: '/e-office/',
+  base: '/e-office',
   // Fast Refresh 热更新
   fastRefresh: {},
-  nodeModulesTransform: { type: 'none' },
-  mfsu: {},
+  nodeModulesTransform: {type: 'none'},
   webpack5: {},
   exportStatic: {},
   qiankun: {
@@ -61,6 +62,10 @@ export default defineConfig({
         {
           name: 'pdf', // 唯一 id
           entry: '//localhost:8001', // html entry
+        },
+        {
+          name: 'markdown', // 唯一 id
+          entry: '//localhost:8002/e-markdown', // html entry
         },
       ],
     },
