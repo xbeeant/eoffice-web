@@ -8,7 +8,6 @@ import { history, request } from 'umi';
 import type { PopupProps } from './components/Popup';
 import Popup from './components/Popup';
 import { formatSize } from '@/utils/utils';
-import { useModel } from '@@/plugin-model/useModel';
 
 export type TableListItem = {
   key: number;
@@ -16,6 +15,8 @@ export type TableListItem = {
   size: number;
   extension: string;
   updateAt: number;
+  rid: string;
+  sid: string;
 };
 
 const iconMap = {
@@ -38,11 +39,11 @@ interface ResourceProps {
 const Resource: React.ReactNode = ({ match }: ResourceProps) => {
   const { params: matchParams } = match;
 
-  const { initialState } = useModel('@@initialState');
-  console.log(initialState?.pathmap);
   const ref = useRef<ActionType>();
 
   const [menu, setMenu] = useState<MenuProps>();
+
+  const [pathmap, setPathmap] = useState([]);
 
   const [popup, setPopup] = useState<PopupProps>({
     fid: matchParams?.fid,
@@ -65,8 +66,7 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
           {iconMap[record.extension] || <FileOutlined />}
           <a
             onClick={() => {
-              console.log(record.extension);
-              console.log(initialState?.pathmap);
+              console.log(record.extension, pathmap);
               switch (record.extension) {
                 case 'folder':
                   history.push({
@@ -75,9 +75,9 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
                   break;
                 default:
                   window.open(
-                    `/view/${initialState?.pathmap[record.extension] || 'unkown'}/?rid=${
-                      record.rid
-                    }&sid=${record.sid}`,
+                    `/${pathmap[record.extension] || 'unkown'}/?rid=${record.rid}&sid=${
+                      record.sid
+                    }`,
                   );
                   break;
               }
@@ -163,9 +163,13 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
   };
 
   useEffect(() => {
-    console.log(matchParams);
-    ref?.current?.reload();
-    getBreadcrumbs(matchParams?.fid);
+    request('/api/config/pathmap').then((response) => {
+      if (response.success) {
+        setPathmap(response.data);
+        ref?.current?.reload();
+        getBreadcrumbs(matchParams?.fid);
+      }
+    });
   }, [matchParams]);
 
   return (

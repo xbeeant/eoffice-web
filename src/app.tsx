@@ -5,7 +5,7 @@ import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history, request as requests } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser, getPathmap } from './services/ant-design-pro/api';
+import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { HistoryOutlined, HomeOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 
@@ -68,7 +68,6 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
-  pathmap: object;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -79,12 +78,7 @@ export async function getInitialState(): Promise<{
     }
     return undefined;
   };
-  let pathmap = [];
-  const fetchPathmap = async () => {
-    const response = await getPathmap();
-    pathmap = response.data || [];
-  };
-  fetchPathmap();
+  console.log('fetch finished');
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
@@ -92,14 +86,12 @@ export async function getInitialState(): Promise<{
       fetchUserInfo,
       currentUser,
       settings: {},
-      pathmap: pathmap,
     };
   }
 
   return {
     fetchUserInfo,
     settings: {},
-    pathmap: pathmap,
   };
 }
 

@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Dropdown, Menu, Tooltip } from 'antd';
-import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
+import type { ActionType, ProColumns } from '@ant-design/pro-table';
+import ProTable from '@ant-design/pro-table';
 import {
   FileExcelOutlined,
   FileMarkdownOutlined,
@@ -59,7 +60,7 @@ const columns: ProColumns<TableListItem>[] = [
     title: (
       <>
         更新时间
-        <Tooltip placement="top" title="这是一段描述">
+        <Tooltip placement="top" title="更新时间">
           <QuestionCircleOutlined style={{ marginLeft: 4 }} />
         </Tooltip>
       </>

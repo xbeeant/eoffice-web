@@ -24,14 +24,15 @@
   //   component: './Resource/ImageView',
   // },
   {
-    path: '/view/pdf',
+    path: '/pdf',
     layout: false,
     microApp: 'pdf',
   },
   {
-    path: '/view/markdown',
+    path: '/markdown',
     layout: false,
     microApp: 'markdown',
+    activeRule: '/view/markdown',
   },
   //
   // {
