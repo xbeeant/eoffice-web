@@ -32,7 +32,6 @@
     path: '/markdown',
     layout: false,
     microApp: 'markdown',
-    activeRule: '/view/markdown',
   },
   //
   // {
