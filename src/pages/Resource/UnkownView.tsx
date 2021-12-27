@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
-import { Image } from 'antd';
+import type { ResourceParamsProps, ResourceProps } from '@/typings';
 
-interface ResourceProps {
-  match: { params: { rid: number } };
-}
-
-const ImageView = ({ match }: ResourceProps) => {
+const ImageView = ({ match }: ResourceParamsProps) => {
   const { params: matchParams } = match;
 
-  const [data, setData] = useState();
+  const [data, setData] = useState<ResourceProps>();
 
   const loadData = (rid: string | undefined) => {
     if (rid) {

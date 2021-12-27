@@ -52,7 +52,7 @@ export default defineConfig({
   base: '/e-office',
   // Fast Refresh 热更新
   fastRefresh: {},
-  nodeModulesTransform: {type: 'none'},
+  nodeModulesTransform: { type: 'none' },
   webpack5: {},
   exportStatic: {},
   qiankun: {

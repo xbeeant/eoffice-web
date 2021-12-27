@@ -1,7 +1,7 @@
 import { createRef, useState } from 'react';
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
+import type { RequestConfig } from 'umi';
 import { history, request as requests } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
@@ -108,7 +108,19 @@ const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
   }));
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+export const layout: ({initialState}: { initialState: any }) => {
+  waterMarkProps: { content: string | undefined };
+  subMenuItemRender: (item: any, dom: any) => JSX.Element;
+  rightContentRender: () => JSX.Element;
+  menuItemRender: (item: any, dom: any) => JSX.Element;
+  disableContentMargin: boolean;
+  footerRender: () => JSX.Element;
+  onPageChange: () => void;
+  menuHeaderRender: undefined;
+  actionRef: React.RefObject<{ reload: () => void }>;
+  menu: { request: () => Promise<MenuDataItem[]> };
+  breadcrumbProps: { minLength: number; separator: string };
+} = ({initialState}) => {
   return {
     actionRef: layoutActionRef,
     rightContentRender: () => <RightContent />,
@@ -150,6 +162,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       </a>
     ),
     menu: {
+      // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
+      params: {
+        userId: initialState?.currentUser?.userid,
+      },
       request: async () => {
         const response = await requests('/api/menu');
         let menus;

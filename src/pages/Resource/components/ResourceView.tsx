@@ -1,6 +1,4 @@
-const ResourceView = ({ location }) => {
-  console.log(location);
-
+const ResourceView = ({}) => {
   return <div>sssss</div>;
 };
 

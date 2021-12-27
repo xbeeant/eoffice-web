@@ -1,4 +1,5 @@
-import { MutableRefObject, useState } from 'react';
+import type { MutableRefObject } from 'react';
+import { useState } from 'react';
 import { Menu } from 'antd';
 import {
   FileExcelOutlined,
@@ -12,14 +13,16 @@ import {
 import { layoutActionRef } from '@/app';
 import FolderModal from '../FolderModal';
 
-import styles from './index.less';
-import { ActionType } from '@ant-design/pro-table';
+import type { ActionType } from '@ant-design/pro-table';
 import FileUploadModal from '@/pages/Resource/components/FileUploadModal';
+
+// @ts-ignore
+import styles from './index.less';
 
 const { SubMenu } = Menu;
 
 export interface PopupProps {
-  fid?: number;
+  fid?: string;
   actionRef?: MutableRefObject<ActionType | undefined>;
   visible: boolean;
   record?: unknown;
@@ -27,7 +30,7 @@ export interface PopupProps {
   y?: number;
 }
 
-const Popup = ({ fid, actionRef, visible, record, x, y }: PopupProps) => {
+const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
   const [folderModalVisible, setFolderModalVisible] = useState(false);
   const [fileModalVisible, setFileModalVisible] = useState(false);
 
@@ -35,7 +38,7 @@ const Popup = ({ fid, actionRef, visible, record, x, y }: PopupProps) => {
     <div className={styles.popup} style={{ left: `${x}px`, top: `${y}px` }}>
       {folderModalVisible && (
         <FolderModal
-          pfid={fid || 0}
+          pfid={fid || '0'}
           visible={folderModalVisible}
           onCancel={() => setFolderModalVisible(false)}
           onOk={() => {
@@ -46,7 +49,7 @@ const Popup = ({ fid, actionRef, visible, record, x, y }: PopupProps) => {
       )}
       {fileModalVisible && (
         <FileUploadModal
-          fid={fid || 0}
+          fid={fid || '0'}
           visible={fileModalVisible}
           onCancel={() => setFileModalVisible(false)}
           onOk={() => {

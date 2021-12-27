@@ -4,10 +4,11 @@ import { Breadcrumb, Card } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { FileExcelOutlined, FileOutlined, FolderOutlined } from '@ant-design/icons';
-import { history, request } from 'umi';
+import { history, Link, request } from 'umi';
 import type { PopupProps } from './components/Popup';
 import Popup from './components/Popup';
 import { formatSize } from '@/utils/utils';
+import type { FolderProps, ResourceParamsProps } from '@/typings';
 
 export type TableListItem = {
   key: number;
@@ -26,22 +27,12 @@ const iconMap = {
   xls: <FileExcelOutlined />,
 };
 
-interface MenuProps {
-  name: string;
-  path: string;
-  children?: MenuProps[];
-}
-
-interface ResourceProps {
-  match: { params: { fid: number } };
-}
-
-const Resource: React.ReactNode = ({ match }: ResourceProps) => {
+const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const { params: matchParams } = match;
 
   const ref = useRef<ActionType>();
 
-  const [menu, setMenu] = useState<MenuProps>();
+  const [breadcrumb, setBreadcrumb] = useState<FolderProps[]>([]);
 
   const [pathmap, setPathmap] = useState([]);
 
@@ -116,34 +107,15 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
     },
   ];
 
-  const getBreadcrumbs = async (fid: number) => {
+  const getBreadcrumbs = async (fid: string) => {
     if (fid) {
-      const response = await request('/api/folder/parents?fid=' + fid);
-      setMenu(response.data || {});
+      const response = await request('/api/folder/breadcrumb?fid=' + fid);
+      setBreadcrumb(response.data || []);
     }
   };
 
-  // @ts-ignore
-  const renderSubBreadcrumb = (item: MenuProps) => {
-    return (
-      <>
-        <Breadcrumb.Item
-          key={item.path}
-          onClick={(e) => {
-            e.stopPropagation();
-            history.push({
-              pathname: item.path,
-            });
-          }}
-        >
-          <a href="javascript:void (0);">{item.name}</a>
-        </Breadcrumb.Item>
-        {item.children && item.children.map((sub) => renderSubBreadcrumb(sub))}
-      </>
-    );
-  };
-
   const renderBreadcrumb = () => {
+    console.log(breadcrumb);
     return (
       <Breadcrumb>
         <Breadcrumb.Item
@@ -157,7 +129,11 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
         >
           <a href="javascript:void (0);">我的</a>
         </Breadcrumb.Item>
-        {menu && renderSubBreadcrumb(menu)}
+        {breadcrumb.map((item) => (
+          <Breadcrumb.Item>
+            <Link to={`/res/${item.fid}`}>{item.name}</Link>
+          </Breadcrumb.Item>
+        ))}
       </Breadcrumb>
     );
   };
@@ -167,9 +143,9 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
       if (response.success) {
         setPathmap(response.data);
         ref?.current?.reload();
-        getBreadcrumbs(matchParams?.fid);
       }
     });
+    getBreadcrumbs(matchParams?.fid);
   }, [matchParams]);
 
   return (
@@ -177,6 +153,7 @@ const Resource: React.ReactNode = ({ match }: ResourceProps) => {
       title={false}
       header={{
         breadcrumbRender: (_, originBreadcrumb) => {
+          console.log('breadcrumb render');
           const fid = matchParams?.fid;
           if (fid) {
             return renderBreadcrumb();

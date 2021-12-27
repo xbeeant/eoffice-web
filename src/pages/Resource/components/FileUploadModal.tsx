@@ -1,10 +1,10 @@
+import type { MutableRefObject } from 'react';
 import { ModalForm } from '@ant-design/pro-form';
 import Uploader from '@/components/Uploader';
-import { MutableRefObject } from 'react';
-import { ActionType } from '@ant-design/pro-table';
+import type { ActionType } from '@ant-design/pro-table';
 
 export interface FileUploadProps {
-  fid: number;
+  fid: string;
   actionRef?: MutableRefObject<ActionType | undefined>;
   visible: boolean;
   onCancel: () => void;

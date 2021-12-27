@@ -1,11 +1,10 @@
 import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { request } from 'umi';
-import { message } from 'antd';
-import { MutableRefObject } from 'react';
-import { ActionType } from '@ant-design/pro-table';
+import type { MutableRefObject } from 'react';
+import type { ActionType } from '@ant-design/pro-table';
 
 export interface FolderModalProps {
-  pfid?: number;
+  pfid?: string;
   actionRef?: MutableRefObject<ActionType | undefined>;
   visible: boolean;
   onCancel: () => void;
@@ -35,7 +34,6 @@ const FolderModal = ({ visible, pfid, onCancel, onOk }: FolderModalProps) => {
           onOk();
           return true;
         }
-        message.error(response.msg);
 
         return false;
       }}

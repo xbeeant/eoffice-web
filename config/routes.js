@@ -18,11 +18,6 @@
       },
     ],
   },
-  // {
-  //   path: '/view/image/:rid',
-  //   layout: false,
-  //   component: './Resource/ImageView',
-  // },
   {
     path: '/pdf',
     layout: false,
@@ -34,12 +29,6 @@
     microApp: 'markdown',
     activeRule: '/view/markdown',
   },
-  //
-  // {
-  //   path: '/view/unknow/:rid',
-  //   layout: false,
-  //   component: './Resource/UnkownView',
-  // },
   {
     path: '/res',
     name: 'welcome',
@@ -59,24 +48,6 @@
     path: '/latest',
     name: 'welcome',
     component: './Welcome',
-  },
-  {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    component: './Admin',
-    routes: [
-      {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
-      },
-      {
-        component: './404',
-      },
-    ],
   },
   {
     path: '/',
