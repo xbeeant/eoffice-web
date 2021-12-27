@@ -13,8 +13,8 @@ export default {
       changeOrigin: true,
       logLevel: 'debug',
       cookiePathRewrite: {
-        "/eoffice/": "/",
-      }
+        '/eoffice/': '/',
+      },
     },
   },
   test: {

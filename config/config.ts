@@ -1,11 +1,11 @@
 // https://umijs.org/config/
-import { defineConfig } from 'umi';
+import {defineConfig} from 'umi';
 
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 
-const { REACT_APP_ENV } = process.env;
+const {REACT_APP_ENV} = process.env;
 
 export default defineConfig({
   hash: true,
@@ -61,11 +61,11 @@ export default defineConfig({
       apps: [
         {
           name: 'pdf', // 唯一 id
-          entry: '//localhost:8001', // html entry
+          entry: '//localhost/pdf', // html entry
         },
         {
           name: 'markdown', // 唯一 id
-          entry: '//localhost:8002', // html entry
+          entry: '//localhost/markdown', // html entry
         },
       ],
     },

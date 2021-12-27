@@ -66,9 +66,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
                   break;
                 default:
                   window.open(
-                    `/${pathmap[record.extension] || 'unkown'}/?rid=${record.rid}&sid=${
-                      record.sid
-                    }`,
+                    `/${pathmap[record.extension] || 'unkown'}?rid=${record.rid}&sid=${record.sid}`,
                   );
                   break;
               }
