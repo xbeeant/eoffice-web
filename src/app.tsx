@@ -1,3 +1,4 @@
+import type { ReactChild, ReactFragment, ReactPortal } from 'react';
 import { createRef, useState } from 'react';
 import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
@@ -8,6 +9,7 @@ import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { HistoryOutlined, HomeOutlined } from '@ant-design/icons';
 import { message } from 'antd';
+import type { Route } from 'antd/lib/breadcrumb/Breadcrumb';
 
 const loginPath = '/user/login';
 
@@ -40,7 +42,13 @@ const errorHandler = (error: { response: any }) => {
   }
 
   if (response) {
-    message.error(response.msg);
+    if (response.code === 401) {
+      history.push(loginPath);
+    }
+
+    if (!response.success) {
+      message.error(response.msg);
+    }
   } else {
     message.error('网络异常');
   }
@@ -67,7 +75,9 @@ export const request: RequestConfig = {
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
+  breadcrumbs?: Route[];
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchBreadcrumb?: () => Promise<Route[]>;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -78,19 +88,40 @@ export async function getInitialState(): Promise<{
     }
     return undefined;
   };
+
+  const fetchBreadcrumb = async () => {
+    console.log(history.location);
+    if (history.location.pathname.indexOf('/res/') === 0) {
+      const fid = history.location.pathname.substring(5);
+      const response = await requests('/api/folder/breadcrumb?fid=' + fid);
+      return response.data || [];
+    }
+
+    return [
+      {
+        path: '/',
+        breadcrumbName: '首页',
+      },
+    ];
+  };
+
   console.log('fetch finished');
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
+    const breadcrumbs: Route[] = await fetchBreadcrumb();
     return {
       fetchUserInfo,
+      fetchBreadcrumb,
       currentUser,
+      breadcrumbs,
       settings: {},
     };
   }
 
   return {
     fetchUserInfo,
+    fetchBreadcrumb,
     settings: {},
   };
 }
@@ -108,7 +139,7 @@ const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
   }));
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: ({initialState}: { initialState: any }) => {
+export const layout: ({ initialState }: { initialState: any }) => {
   waterMarkProps: { content: string | undefined };
   subMenuItemRender: (item: any, dom: any) => JSX.Element;
   rightContentRender: () => JSX.Element;
@@ -120,7 +151,8 @@ export const layout: ({initialState}: { initialState: any }) => {
   actionRef: React.RefObject<{ reload: () => void }>;
   menu: { request: () => Promise<MenuDataItem[]> };
   breadcrumbProps: { minLength: number; separator: string };
-} = ({initialState}) => {
+} = ({ initialState }) => {
+  console.log(initialState);
   return {
     actionRef: layoutActionRef,
     rightContentRender: () => <RightContent />,
@@ -162,6 +194,9 @@ export const layout: ({initialState}: { initialState: any }) => {
       </a>
     ),
     menu: {
+      locale: false,
+      defaultOpenAll: true,
+      ignoreFlatMenu: true,
       // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
       params: {
         userId: initialState?.currentUser?.userid,
@@ -216,7 +251,31 @@ export const layout: ({initialState}: { initialState: any }) => {
         return loopMenuItem(menus);
       },
     },
+    breadcrumbRender: () => {
+      return [
+        {
+          breadcrumbName: '首页',
+          path: '/',
+        },
+        ...initialState?.breadcrumbs,
+      ];
+    },
     breadcrumbProps: {
+      itemRender: (route: {
+        path: string;
+        breadcrumbName: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined;
+      }) => {
+        return (
+          <a
+            href="#"
+            onClick={() => {
+              history.push(route.path);
+            }}
+          >
+            {route.breadcrumbName}
+          </a>
+        );
+      },
       minLength: 1,
       separator: '>',
     },

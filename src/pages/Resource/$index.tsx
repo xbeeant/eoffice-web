@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Breadcrumb, Card } from 'antd';
+import { Card } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { FileExcelOutlined, FileOutlined, FolderOutlined } from '@ant-design/icons';
-import { history, Link, request } from 'umi';
+import { history, request } from 'umi';
 import type { PopupProps } from './components/Popup';
 import Popup from './components/Popup';
 import { formatSize } from '@/utils/utils';
-import type { FolderProps, ResourceParamsProps } from '@/typings';
+import type { ResourceParamsProps } from '@/typings';
+import { useModel } from '@@/plugin-model/useModel';
+import { layoutActionRef } from '@/app';
 
 export type TableListItem = {
   key: number;
@@ -32,9 +34,10 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
 
   const ref = useRef<ActionType>();
 
-  const [breadcrumb, setBreadcrumb] = useState<FolderProps[]>([]);
-
   const [pathmap, setPathmap] = useState([]);
+  const { initialState, setInitialState } = useModel('@@initialState');
+
+  const [fid, setFid] = useState<string>('');
 
   const [popup, setPopup] = useState<PopupProps>({
     fid: matchParams?.fid,
@@ -44,6 +47,22 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     y: 0,
     record: {},
   });
+
+  const refreshBreadcrumb = async () => {
+    console.log(initialState);
+    if (fid === matchParams?.fid) {
+      return;
+    }
+    // @ts-ignore
+    const breadcrumbs = await initialState?.fetchBreadcrumb();
+    if (breadcrumbs) {
+      await setInitialState((s) => ({
+        ...s,
+        breadcrumbs: breadcrumbs,
+      }));
+    }
+    layoutActionRef?.current?.reload();
+  };
 
   const columns: ProColumns<TableListItem>[] = [
     {
@@ -105,37 +124,6 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     },
   ];
 
-  const getBreadcrumbs = async (fid: string) => {
-    if (fid) {
-      const response = await request('/api/folder/breadcrumb?fid=' + fid);
-      setBreadcrumb(response.data || []);
-    }
-  };
-
-  const renderBreadcrumb = () => {
-    console.log(breadcrumb);
-    return (
-      <Breadcrumb>
-        <Breadcrumb.Item
-          key={'/'}
-          onClick={(e) => {
-            e.stopPropagation();
-            history.push({
-              pathname: '/',
-            });
-          }}
-        >
-          <a href="javascript:void (0);">我的</a>
-        </Breadcrumb.Item>
-        {breadcrumb.map((item) => (
-          <Breadcrumb.Item>
-            <Link to={`/res/${item.fid}`}>{item.name}</Link>
-          </Breadcrumb.Item>
-        ))}
-      </Breadcrumb>
-    );
-  };
-
   useEffect(() => {
     request('/api/config/pathmap').then((response) => {
       if (response.success) {
@@ -143,24 +131,12 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
         ref?.current?.reload();
       }
     });
-    getBreadcrumbs(matchParams?.fid);
+    refreshBreadcrumb();
+    setFid(matchParams.fid);
   }, [matchParams]);
 
   return (
-    <PageContainer
-      title={false}
-      header={{
-        breadcrumbRender: (_, originBreadcrumb) => {
-          console.log('breadcrumb render');
-          const fid = matchParams?.fid;
-          if (fid) {
-            return renderBreadcrumb();
-          }
-
-          return originBreadcrumb;
-        },
-      }}
-    >
+    <PageContainer title={false}>
       <Card
         onContextMenu={(event) => {
           event.preventDefault();

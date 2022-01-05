@@ -2,10 +2,8 @@ import { useState } from 'react';
 import { Button, message, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 // @ts-ignore
-import XmindParser from 'xmindparser';
-import { isXmind } from '@/utils/utils';
-import { ButtonType } from 'antd/lib/button/button';
-import { RcFile, UploadChangeParam, UploadFile } from 'antd/lib/upload/interface';
+import type { ButtonType } from 'antd/lib/button/button';
+import type { RcFile, UploadChangeParam, UploadFile } from 'antd/lib/upload/interface';
 
 export interface UploaderProps {
   action: string;
@@ -28,22 +26,7 @@ const Uploader = (props: UploaderProps) => {
     beforeUpload: (file: RcFile) => {
       console.log('before upload');
       return new Promise<File>((resolve) => {
-        if (isXmind(file)) {
-          console.log('xmind文件解析');
-          // 脑图的上传
-          const parser = new XmindParser();
-          // xmind转脑图 json 支持二进制文件或url和本地目录
-          parser.xmindToJSON(file).then((json: string) => {
-            const naotuFile = new File(
-              [JSON.stringify(json)],
-              file.name.replace('.xmind', '.minder'),
-              { type: 'text/plain' },
-            );
-            resolve(naotuFile);
-          });
-        } else {
-          resolve(file);
-        }
+        resolve(file);
       });
     },
     onChange: (info: UploadChangeParam) => {

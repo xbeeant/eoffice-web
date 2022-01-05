@@ -78,36 +78,50 @@ export default (): React.ReactNode => {
   const ref = useRef<ActionType>();
 
   const menu = (
-    <Menu>
-      <SubMenu title="新建/上传" icon={<UploadOutlined />}>
-        <Menu.Item icon={<FolderOutlined />} onClick={() => setFolderModalVisible(true)}>
+    <Menu key="rightcontent">
+      <SubMenu key="neworupload" title="新建/上传" icon={<UploadOutlined />}>
+        <Menu.Item
+          key="folder"
+          icon={<FolderOutlined />}
+          onClick={() => setFolderModalVisible(true)}
+        >
           新建文件夹
         </Menu.Item>
-        <Menu.Item icon={<UploadOutlined />}>上传文件</Menu.Item>
+        <Menu.Item key="upload" icon={<UploadOutlined />}>
+          上传文件
+        </Menu.Item>
         <Menu.Divider />
-        <Menu.Item icon={<FileWordOutlined />}>Word文档</Menu.Item>
-        <Menu.Item icon={<FileExcelOutlined />}>Excel文档</Menu.Item>
-        <Menu.Item icon={<FilePptOutlined />}>PPT文档</Menu.Item>
-        <Menu.Item icon={<FileMarkdownOutlined />}>Markdown</Menu.Item>
+        <Menu.Item key="word" icon={<FileWordOutlined />}>
+          Word文档
+        </Menu.Item>
+        <Menu.Item key="excel" icon={<FileExcelOutlined />}>
+          Excel文档
+        </Menu.Item>
+        <Menu.Item key="ppt" icon={<FilePptOutlined />}>
+          PPT文档
+        </Menu.Item>
+        <Menu.Item key="markdown" icon={<FileMarkdownOutlined />}>
+          Markdown
+        </Menu.Item>
       </SubMenu>
       <Menu.Item
         key="2"
         icon={<ReloadOutlined />}
-        onClick={() => {
-          ref?.current?.reload();
+        onClick={async () => {
           layoutActionRef?.current?.reload();
+          ref?.current?.reload();
         }}
       >
         刷新
       </Menu.Item>
     </Menu>
   );
-  console.log(ref);
+
   return (
     <PageContainer>
       {folderModalVisible && (
         <FolderModal
-          pfid={0}
+          pfid="0"
           visible={folderModalVisible}
           onCancel={() => setFolderModalVisible(false)}
           onOk={() => {
