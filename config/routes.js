@@ -29,6 +29,11 @@
     microApp: 'markdown',
   },
   {
+    path: '/sheet',
+    layout: false,
+    microApp: 'sheet',
+  },
+  {
     path: '/res',
     name: 'welcome',
     routes: [
