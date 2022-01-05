@@ -34,6 +34,11 @@
     microApp: 'sheet',
   },
   {
+    path: '/unkown',
+    name: '格式不支持',
+    component: './Resource/UnkownView',
+  },
+  {
     path: '/res',
     name: 'welcome',
     routes: [

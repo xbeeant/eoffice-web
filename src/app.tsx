@@ -257,7 +257,7 @@ export const layout: ({ initialState }: { initialState: any }) => {
           breadcrumbName: '首页',
           path: '/',
         },
-        ...initialState?.breadcrumbs,
+        ...(initialState?.breadcrumbs || []),
       ];
     },
     breadcrumbProps: {
