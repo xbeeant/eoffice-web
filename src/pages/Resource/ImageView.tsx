@@ -1,30 +1,55 @@
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
-import { Image } from 'antd';
-import type { ResourceParamsProps, ResourceProps } from '@/typings';
+import { Image, Skeleton } from 'antd';
+import { PageContainer } from '@ant-design/pro-layout';
 
-const ImageView = ({ match }: ResourceParamsProps) => {
-  const { params: matchParams } = match;
+interface LocationProps extends Location {
+  query: { rid: string; sid: string };
+}
 
-  const [data, setData] = useState<ResourceProps>();
+const ImageView: ({ location }: { location: LocationProps }) => JSX.Element = ({ location }) => {
+  const {
+    query: { rid },
+  } = location;
+  const [loading, setLoading] = useState<boolean>(true);
+  const [data, setData] = useState<{ url?: string; name?: string }>({});
 
-  const loadData = (rid: string | undefined) => {
+  const loadData = async () => {
+    setLoading(true);
     if (rid) {
-      request('/api/resource/detail', {
-        params: { rid },
-      }).then((response) => {
-        setData(response.data);
+      const response = await request('/api/resource/detail', {
+        params: {
+          rid,
+        },
       });
+      if (response.success) {
+        // load content from url
+        setData(response.data);
+      }
     }
   };
 
   useEffect(() => {
-    loadData(matchParams?.rid);
-  }, [matchParams]);
+    loadData().then(() => setLoading(false));
+  }, [rid]);
+
   return (
-    <div style={{ textAlign: 'center' }}>
-      <Image src={data?.url} />
-    </div>
+    <PageContainer title={false} pageHeaderRender={false}>
+      {loading && <Skeleton />}
+      {!loading &&
+        (rid ? (
+          <div
+            style={{
+              textAlign: 'center',
+              height: '100%',
+            }}
+          >
+            <Image src={data.url} alt={data.name} />
+          </div>
+        ) : (
+          <div>参数不全</div>
+        ))}
+    </PageContainer>
   );
 };
 

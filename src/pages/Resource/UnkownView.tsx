@@ -1,30 +1,53 @@
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
-import type { ResourceParamsProps, ResourceProps } from '@/typings';
+import { Result, Skeleton } from 'antd';
+import { PageContainer } from '@ant-design/pro-layout';
 
-const ImageView = ({ match }: ResourceParamsProps) => {
-  const { params: matchParams } = match;
+interface LocationProps extends Location {
+  query: { rid: string; sid: string };
+}
 
-  const [data, setData] = useState<ResourceProps>();
+const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = ({ location }) => {
+  const {
+    query: { rid },
+  } = location;
+  const [loading, setLoading] = useState<boolean>(true);
+  const [data, setData] = useState<{ url?: string; name?: string }>({});
 
-  const loadData = (rid: string | undefined) => {
+  const loadData = async () => {
+    setLoading(true);
     if (rid) {
-      request('/api/resource/detail', {
-        params: { rid },
-      }).then((response) => {
-        setData(response.data);
+      const response = await request('/api/resource/detail', {
+        params: {
+          rid,
+        },
       });
+      if (response.success) {
+        // load content from url
+        setData(response.data);
+      }
     }
   };
 
   useEffect(() => {
-    loadData(matchParams?.rid);
-  }, [matchParams]);
+    loadData().then(() => setLoading(false));
+  }, [rid]);
+
   return (
-    <div>
-      <a href={data?.url}>下载</a>
-    </div>
+    <PageContainer title={false} pageHeaderRender={false}>
+      {loading && <Skeleton />}
+      {!loading &&
+        (rid ? (
+          <Result
+            status="warning"
+            title="暂不支持该类型文件的在线预览，您可以下载到本地进行查看"
+            extra={<a href={data.url}>下载</a>}
+          />
+        ) : (
+          <div>参数不全</div>
+        ))}
+    </PageContainer>
   );
 };
 
-export default ImageView;
+export default UnkownView;

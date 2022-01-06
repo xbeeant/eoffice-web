@@ -35,8 +35,13 @@
   },
   {
     path: '/unkown',
-    name: '格式不支持',
+    layout: false,
     component: './Resource/UnkownView',
+  },
+  {
+    path: '/image',
+    layout: false,
+    component: './Resource/ImageView',
   },
   {
     path: '/res',
