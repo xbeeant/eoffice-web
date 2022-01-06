@@ -1,24 +1,16 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Dropdown, Menu, Tooltip } from 'antd';
+import { Card, Tooltip } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import {
   FileExcelOutlined,
-  FileMarkdownOutlined,
   FileOutlined,
-  FilePptOutlined,
-  FileWordOutlined,
   FolderOutlined,
   QuestionCircleOutlined,
-  ReloadOutlined,
-  UploadOutlined,
 } from '@ant-design/icons';
 import { request } from 'umi';
 import FolderModal from '@/pages/Resource/components/FolderModal';
-import { layoutActionRef } from '@/app';
-
-const { SubMenu } = Menu;
 
 export type TableListItem = {
   key: number;
@@ -77,46 +69,6 @@ export default (): React.ReactNode => {
   const [folderModalVisible, setFolderModalVisible] = useState(false);
   const ref = useRef<ActionType>();
 
-  const menu = (
-    <Menu key="rightcontent">
-      <SubMenu key="neworupload" title="新建/上传" icon={<UploadOutlined />}>
-        <Menu.Item
-          key="folder"
-          icon={<FolderOutlined />}
-          onClick={() => setFolderModalVisible(true)}
-        >
-          新建文件夹
-        </Menu.Item>
-        <Menu.Item key="upload" icon={<UploadOutlined />}>
-          上传文件
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="word" icon={<FileWordOutlined />}>
-          Word文档
-        </Menu.Item>
-        <Menu.Item key="excel" icon={<FileExcelOutlined />}>
-          Excel文档
-        </Menu.Item>
-        <Menu.Item key="ppt" icon={<FilePptOutlined />}>
-          PPT文档
-        </Menu.Item>
-        <Menu.Item key="markdown" icon={<FileMarkdownOutlined />}>
-          Markdown
-        </Menu.Item>
-      </SubMenu>
-      <Menu.Item
-        key="2"
-        icon={<ReloadOutlined />}
-        onClick={async () => {
-          layoutActionRef?.current?.reload();
-          ref?.current?.reload();
-        }}
-      >
-        刷新
-      </Menu.Item>
-    </Menu>
-  );
-
   return (
     <PageContainer>
       {folderModalVisible && (
@@ -130,25 +82,23 @@ export default (): React.ReactNode => {
           }}
         />
       )}
-      <Dropdown overlay={menu} trigger={['contextMenu']}>
-        <Card>
-          <ProTable<TableListItem>
-            columns={columns}
-            actionRef={ref}
-            request={async (params, sorter, filter) => {
-              // 表单搜索项会从 params 传入，传递给后端接口。
-              return await request('/api/resource', {
-                params: { ...params, ...sorter, ...filter },
-              });
-            }}
-            size="small"
-            toolBarRender={false}
-            rowKey="key"
-            search={false}
-            dateFormatter="string"
-          />
-        </Card>
-      </Dropdown>
+      <Card>
+        <ProTable<TableListItem>
+          columns={columns}
+          actionRef={ref}
+          request={async (params, sorter, filter) => {
+            // 表单搜索项会从 params 传入，传递给后端接口。
+            return await request('/api/resource', {
+              params: { ...params, ...sorter, ...filter },
+            });
+          }}
+          size="small"
+          toolBarRender={false}
+          rowKey="key"
+          search={false}
+          dateFormatter="string"
+        />
+      </Card>
     </PageContainer>
   );
 };
