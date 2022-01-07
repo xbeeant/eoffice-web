@@ -1,13 +1,14 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, message } from 'antd';
 import React, { useState } from 'react';
-import { LoginForm, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
-import { FormattedMessage, history, SelectLang, useIntl, useModel } from 'umi';
+import { LoginForm, ProFormText } from '@ant-design/pro-form';
+import { FormattedMessage, history, Link, SelectLang, useIntl, useModel } from 'umi';
 import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/api';
 
 import defaultSettings from '../../../../config/defaultSettings';
 
+// @ts-ignore
 import styles from './index.less';
 
 const LoginMessage: React.FC<{
@@ -147,9 +148,7 @@ const Login: React.FC = () => {
               marginBottom: 24,
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
-            </ProFormCheckbox>
+            <Link to="/user/register">注册</Link>
             <a
               style={{
                 float: 'right',

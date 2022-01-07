@@ -12,6 +12,10 @@ import { message } from 'antd';
 import type { Route } from 'antd/lib/breadcrumb/Breadcrumb';
 
 const loginPath = '/user/login';
+const whitePath = {
+  [loginPath]: true,
+  '/user/register': true,
+};
 
 /**
  * 乾坤
@@ -107,7 +111,7 @@ export async function getInitialState(): Promise<{
 
   console.log('fetch finished');
   // 如果是登录页面，不执行
-  if (history.location.pathname !== loginPath) {
+  if (whitePath[history.location.pathname] === undefined) {
     const currentUser = await fetchUserInfo();
     const breadcrumbs: Route[] = await fetchBreadcrumb();
     return {
@@ -164,7 +168,7 @@ export const layout: ({ initialState }: { initialState: any }) => {
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      if (!initialState?.currentUser && whitePath[location.pathname] === undefined) {
         history.push(loginPath);
       }
     },
@@ -202,53 +206,57 @@ export const layout: ({ initialState }: { initialState: any }) => {
         userId: initialState?.currentUser?.userid,
       },
       request: async () => {
-        const response = await requests('/api/menu');
-        let menus;
-        if (response.length === 0) {
-          console.log('no sub menus');
-          menus = [
-            {
-              path: '/',
-              name: 'welcome',
-              icon: 'home',
-              children: [
-                {
-                  path: '/latest',
-                  name: '最近',
-                  icon: 'history',
-                },
-                {
-                  path: '/res',
-                  name: '我的',
-                  icon: 'home',
-                },
-              ],
-            },
-          ];
-        } else {
-          menus = [
-            {
-              path: '/',
-              name: 'welcome',
-              icon: 'home',
-              children: [
-                {
-                  path: '/latest',
-                  name: '最近',
-                  icon: 'history',
-                },
-                {
-                  path: '/res',
-                  name: '我的',
-                  icon: 'home',
-                  children: response,
-                },
-              ],
-            },
-          ];
+        if (initialState?.currentUser?.userid) {
+          const response = await requests('/api/menu');
+          let menus;
+          if (response.length === 0) {
+            console.log('no sub menus');
+            menus = [
+              {
+                path: '/',
+                name: 'welcome',
+                icon: 'home',
+                children: [
+                  {
+                    path: '/latest',
+                    name: '最近',
+                    icon: 'history',
+                  },
+                  {
+                    path: '/res',
+                    name: '我的',
+                    icon: 'home',
+                  },
+                ],
+              },
+            ];
+          } else {
+            menus = [
+              {
+                path: '/',
+                name: 'welcome',
+                icon: 'home',
+                children: [
+                  {
+                    path: '/latest',
+                    name: '最近',
+                    icon: 'history',
+                  },
+                  {
+                    path: '/res',
+                    name: '我的',
+                    icon: 'home',
+                    children: response,
+                  },
+                ],
+              },
+            ];
+          }
+
+          return loopMenuItem(menus);
         }
 
-        return loopMenuItem(menus);
+        return [];
       },
     },
     breadcrumbRender: () => {
