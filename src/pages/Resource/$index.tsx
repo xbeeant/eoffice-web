@@ -8,19 +8,10 @@ import { history, request } from 'umi';
 import type { PopupProps } from './components/Popup';
 import Popup from './components/Popup';
 import { formatSize } from '@/utils/utils';
-import type { ResourceParamsProps } from '@/typings';
+import type { ResourceParamsProps, ResourceProps } from '@/typings';
 import { useModel } from '@@/plugin-model/useModel';
 import { layoutActionRef } from '@/app';
-
-export type TableListItem = {
-  key: number;
-  name: string;
-  size: number;
-  extension: string;
-  updateAt: number;
-  rid: string;
-  sid: string;
-};
+import InfoDrawerProps from './components/InfoDrawer';
 
 const iconMap = {
   folder: <FolderOutlined />,
@@ -38,6 +29,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const { initialState, setInitialState } = useModel('@@initialState');
 
   const [fid, setFid] = useState<string>('');
+  const [selected, setSelected] = useState<ResourceProps>();
 
   const [popup, setPopup] = useState<PopupProps>({
     fid: matchParams?.fid,
@@ -64,7 +56,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     layoutActionRef?.current?.reload();
   };
 
-  const columns: ProColumns<TableListItem>[] = [
+  const columns: ProColumns<ResourceProps>[] = [
     {
       title: '文件名',
       dataIndex: 'name',
@@ -137,6 +129,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     setFid(matchParams.fid);
   }, [matchParams]);
 
+  // @ts-ignore
   return (
     <PageContainer title={false}>
       <Card
@@ -158,7 +151,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           });
         }}
       >
-        <ProTable<TableListItem>
+        <ProTable<ResourceProps>
           columns={columns}
           actionRef={ref}
           request={async (params, sorter, filter) => {
@@ -192,6 +185,9 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
                   y: event.clientY,
                 });
               },
+              onClick: () => {
+                setSelected(record);
+              },
             };
           }}
           size="small"
@@ -201,6 +197,14 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           dateFormatter="string"
         />
       </Card>
+      {selected && (
+        <InfoDrawerProps
+          visible={selected !== undefined}
+          // @ts-ignore
+          value={selected}
+          onClose={() => setSelected(undefined)}
+        />
+      )}
       <Popup {...popup} />
     </PageContainer>
   );

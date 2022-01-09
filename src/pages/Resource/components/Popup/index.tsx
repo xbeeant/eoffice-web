@@ -87,6 +87,7 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
                     fid,
                   },
                 }).then((response) => {
+                  actionRef?.current?.reload();
                   console.log(response);
                 });
                 break;

@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import {request} from 'umi';
 
 export async function getPathmap() {
   return request('/api/config/pathmap');
@@ -13,6 +13,7 @@ export async function currentUser(options?: { [key: string]: any }) {
   }>('/api/currentUser', {
     method: 'GET',
     ...(options || {}),
+    skipErrorHandler: true,
   });
 }
 

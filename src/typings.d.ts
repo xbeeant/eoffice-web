@@ -19,18 +19,32 @@ declare module 'bizcharts-plugin-slider';
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 
-export interface ResourceProps {
+export type ResourceProps = {
   url: string;
   perm: string;
-  rid: string;
+  createAt: string;
+  createBy: string;
+  deleted: boolean;
+  displayOrder: number;
+  extension: string;
   fid: string;
-}
+  key: string;
+  name: string;
+  path: string;
+  rid: string;
+  sid: string;
+  size: number;
+  updateAt: string;
+  updateBy: string;
+};
 
-export interface ResourceParamsProps {
+export type UserProps = { nickname: string; uid: string; username: string };
+
+export type ResourceParamsProps = {
   match: { params: ResourceProps };
-}
+};
 
-export interface FolderProps {
+export type FolderProps = {
   fid: string;
   name: string;
-}
+};

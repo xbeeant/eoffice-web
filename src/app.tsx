@@ -198,7 +198,7 @@ export const layout: ({ initialState }: { initialState: any }) => {
       </a>
     ),
     menu: {
-      locale: false,
+      locale: true,
       defaultOpenAll: true,
       ignoreFlatMenu: true,
       // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
