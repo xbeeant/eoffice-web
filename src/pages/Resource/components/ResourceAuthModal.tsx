@@ -73,7 +73,7 @@ const ResourceAuthModal = ({
       }}
       onFinish={async (values) => {
         // @ts-ignore
-        const response: ApiResponse = request('/api/resource/perm', {
+        const response: ApiResponse = await request('/api/resource/perm', {
           data: { rid, ...values },
           method: 'POST',
           requestType: 'form',
