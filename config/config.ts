@@ -65,11 +65,11 @@ export default defineConfig({
         },
         {
           name: 'markdown',
-          entry: '//localhost:8002/markdown',
+          entry: '//localhost/markdown',
         },
         {
           name: 'sheet',
-          entry: '//localhost:8001/sheet',
+          entry: '//localhost/sheet',
         },
       ],
     },

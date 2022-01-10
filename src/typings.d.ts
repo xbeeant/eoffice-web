@@ -19,6 +19,12 @@ declare module 'bizcharts-plugin-slider';
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 
+export type ApiResponse = {
+  success: boolean;
+  data?: any;
+  code: number;
+};
+
 export type ResourceProps = {
   url: string;
   perm: string;
