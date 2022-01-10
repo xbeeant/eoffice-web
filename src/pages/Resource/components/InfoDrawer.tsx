@@ -3,7 +3,7 @@ import type { ResourceProps, UserProps } from '@/typings';
 import { formatSize } from '@/utils/utils';
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
-import ResourceAuthModal from '@/pages/Resource/components/UserTransfer';
+import ResourceAuthModal from './ResourceAuthModal';
 
 export type InfoDrawerProps = {
   visible: boolean;

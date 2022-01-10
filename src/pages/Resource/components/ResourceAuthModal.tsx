@@ -12,8 +12,9 @@ export interface DebounceSelectProps<ValueType = any>
   debounceTimeout?: number;
 }
 
-function DebounceSelect<ValueType extends { key?: string; label: React.ReactNode; value: string | number } = any,
-  >({fetchOptions, debounceTimeout = 800, ...props}: DebounceSelectProps) {
+function DebounceSelect<
+  ValueType extends { key?: string; label: React.ReactNode; value: string | number } = any,
+>({ fetchOptions, debounceTimeout = 800, ...props }: DebounceSelectProps) {
   const [fetching, setFetching] = useState(false);
   const [options, setOptions] = useState<ValueType[]>([]);
   const fetchRef = useRef(0);
@@ -43,7 +44,7 @@ function DebounceSelect<ValueType extends { key?: string; label: React.ReactNode
     <Select<ValueType>
       filterOption={false}
       onSearch={debounceFetcher}
-      notFoundContent={fetching ? <Spin size="small"/> : null}
+      notFoundContent={fetching ? <Spin size="small" /> : null}
       {...props}
       options={options}
     />
@@ -51,17 +52,15 @@ function DebounceSelect<ValueType extends { key?: string; label: React.ReactNode
 }
 
 const ResourceAuthModal = ({
-                        rid,
-                      }: {
+  rid,
+}: {
   rid: string;
   value?: string[];
   onChange?: (value: string[]) => void;
 }) => {
   const [pagination, setPagination] = useState<PaginationProps>();
 
-  useEffect(() => {
-
-  }, [rid])
+  useEffect(() => {}, [rid]);
 
   return (
     <ModalForm
@@ -74,8 +73,8 @@ const ResourceAuthModal = ({
       }}
       onFinish={async (values) => {
         // @ts-ignore
-        const response: ApiResponse = request('/api/resource/auth', {
-          data: values,
+        const response: ApiResponse = request('/api/resource/perm', {
+          data: { rid, ...values },
           method: 'POST',
           requestType: 'form',
         });
@@ -86,7 +85,7 @@ const ResourceAuthModal = ({
       <Form.Item
         name="users"
         label="用户"
-        rules={[{required: true, message: '请选择需要添加权限的用户!'}]}
+        rules={[{ required: true, message: '请选择需要添加权限的用户!' }]}
       >
         <DebounceSelect
           mode="multiple"
@@ -106,7 +105,7 @@ const ResourceAuthModal = ({
             });
           }}
           placeholder="请选择需要添加权限的用户"
-          style={{width: '100%'}}
+          style={{ width: '100%' }}
         />
       </Form.Item>
       <ProFormCheckbox.Group
