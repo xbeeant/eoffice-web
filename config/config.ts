@@ -69,7 +69,7 @@ export default defineConfig({
         },
         {
           name: 'sheet',
-          entry: '//localhost/sheet',
+          entry: '//localhost/luckysheet',
         },
       ],
     },

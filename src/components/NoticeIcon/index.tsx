@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Tag, message } from 'antd';
+import { message, Tag } from 'antd';
 import { groupBy } from 'lodash';
 import moment from 'moment';
 import { useModel, useRequest } from 'umi';
-import { getNotices } from '@/services/ant-design-pro/api';
+import { getNotices } from '@/services/eoffice/api';
 
 import NoticeIcon from './NoticeIcon';
 import styles from './index.less';

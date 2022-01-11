@@ -67,8 +67,8 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
         <>
           {iconMap[record.extension] || <FileOutlined />}
           <a
-            onClick={() => {
-              console.log(record.extension, pathmap);
+            onClick={(event) => {
+              event.stopPropagation();
               switch (record.extension) {
                 case 'folder':
                   history.push({
@@ -134,7 +134,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     <PageContainer title={false}>
       <Card
         onContextMenu={(event) => {
-          event.preventDefault();
+          event.stopPropagation();
           if (!popup.visible) {
             document.addEventListener(`click`, function onClickOutside() {
               setPopup({ visible: false, actionRef: ref, fid: matchParams?.fid, record: null });
@@ -169,7 +169,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           onRow={(record) => {
             return {
               onContextMenu: (event) => {
-                event.preventDefault();
+                event.stopPropagation();
                 if (!popup.visible) {
                   document.addEventListener(`click`, function onClickOutside() {
                     setPopup({ visible: false, actionRef: ref, fid: matchParams?.fid, record });
@@ -185,7 +185,8 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
                   y: event.clientY,
                 });
               },
-              onClick: () => {
+              onClick: (event) => {
+                event.stopPropagation();
                 setSelected(record);
               },
             };

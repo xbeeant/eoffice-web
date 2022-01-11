@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { LoginForm, ProFormText } from '@ant-design/pro-form';
 import { FormattedMessage, history, Link, SelectLang, useIntl, useModel } from 'umi';
 import Footer from '@/components/Footer';
-import { login } from '@/services/ant-design-pro/api';
+import { login } from '@/services/eoffice/api';
 
 import defaultSettings from '../../../../config/defaultSettings';
 

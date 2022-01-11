@@ -1,9 +1,10 @@
-import { Collapse, Descriptions, Drawer, Skeleton, Tag } from 'antd';
+import { Button, Collapse, Descriptions, Drawer, Input, Skeleton, Tag } from 'antd';
 import type { ResourceProps, UserProps } from '@/typings';
 import { formatSize } from '@/utils/utils';
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
-import ResourceAuthModal from './ResourceAuthModal';
+import ResourceAuthModal from '@/pages/Resource/components/ResourceAuthModal';
+import { EditOutlined } from '@ant-design/icons';
 
 export type InfoDrawerProps = {
   visible: boolean;
@@ -18,6 +19,7 @@ export interface ResourceDetailProps extends ResourceProps {
 const { Panel } = Collapse;
 
 const InfoDrawer = ({ visible, value, onClose }: InfoDrawerProps) => {
+  const [editTitleMode, setEditTitleMode] = useState<boolean>(false);
   const [data, setData] = useState<ResourceDetailProps>({
     createAt: '',
     createBy: '',
@@ -38,6 +40,8 @@ const InfoDrawer = ({ visible, value, onClose }: InfoDrawerProps) => {
   });
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [permModalVisible, setPermModalVisible] = useState<boolean>(false);
+
   const loadData = async () => {
     const response = await request('/api/resource/info', {
       params: {
@@ -54,7 +58,35 @@ const InfoDrawer = ({ visible, value, onClose }: InfoDrawerProps) => {
   }, [value.rid]);
 
   return (
-    <Drawer title={data.name} placement="right" onClose={onClose} visible={visible}>
+    <Drawer
+      title={
+        <>
+          {editTitleMode ? (
+            <Input
+              autoFocus={true}
+              value={data.name}
+              onBlur={() => {
+                request('/api/resource/update', {});
+                setEditTitleMode(false);
+              }}
+            />
+          ) : (
+            <>
+              {data.name}
+              &nbsp;&nbsp;
+              <EditOutlined
+                onClick={() => {
+                  setEditTitleMode(true);
+                }}
+              />
+            </>
+          )}
+        </>
+      }
+      placement="right"
+      onClose={onClose}
+      visible={visible}
+    >
       {loading ? (
         <Skeleton />
       ) : (
@@ -68,11 +100,32 @@ const InfoDrawer = ({ visible, value, onClose }: InfoDrawerProps) => {
               <Descriptions.Item label="大小">{formatSize(data.size)}</Descriptions.Item>
             </Descriptions>
           </Panel>
-          <Panel key="auth" header="成员" extra={<ResourceAuthModal rid={value.rid} />}>
+          <Panel
+            key="auth"
+            header="成员"
+            extra={
+              <Button
+                type="text"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setPermModalVisible(true);
+                }}
+              >
+                管理
+              </Button>
+            }
+          >
             {data.users?.map((user) => (
               <Tag>{user.nickname}</Tag>
             ))}
           </Panel>
+          <ResourceAuthModal
+            rid={value.rid}
+            visible={permModalVisible}
+            onCancel={() => {
+              setPermModalVisible(false);
+            }}
+          />
         </Collapse>
       )}
     </Drawer>

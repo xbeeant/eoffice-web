@@ -6,7 +6,7 @@ import type { RequestConfig } from 'umi';
 import { history, request as requests } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { currentUser as queryCurrentUser } from './services/eoffice/api';
 import { HistoryOutlined, HomeOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import type { Route } from 'antd/lib/breadcrumb/Breadcrumb';
