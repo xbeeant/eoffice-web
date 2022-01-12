@@ -67,8 +67,13 @@
     ],
   },
   {
+    path: '/team',
+    name: 'team',
+    component: './Team',
+  },
+  {
     path: '/latest',
-    name: 'welcome',
+    name: 'latest',
     component: './Welcome',
   },
   {
