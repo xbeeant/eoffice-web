@@ -48,6 +48,10 @@
     component: './Resource/ImageView',
   },
   {
+    path: '/share',
+    component: './Share',
+  },
+  {
     path: '/res',
     name: 'welcome',
     routes: [

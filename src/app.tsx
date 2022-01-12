@@ -7,7 +7,7 @@ import { history, request as requests } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/eoffice/api';
-import { HistoryOutlined, HomeOutlined } from '@ant-design/icons';
+import { HistoryOutlined, HomeOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import type { Route } from 'antd/lib/breadcrumb/Breadcrumb';
 
@@ -133,6 +133,7 @@ export async function getInitialState(): Promise<{
 const IconMap = {
   home: <HomeOutlined />,
   history: <HistoryOutlined />,
+  share: <ShareAltOutlined />,
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -224,8 +225,13 @@ export const layout: ({ initialState }: { initialState: any }) => {
                   },
                   {
                     path: '/res',
-                    name: '我的',
+                    name: '我的文档',
                     icon: 'home',
+                  },
+                  {
+                    path: '/share',
+                    name: '分享',
+                    icon: 'share',
                   },
                 ],
               },
@@ -244,9 +250,14 @@ export const layout: ({ initialState }: { initialState: any }) => {
                   },
                   {
                     path: '/res',
-                    name: '我的',
+                    name: '我的文档',
                     icon: 'home',
                     children: response,
+                  },
+                  {
+                    path: '/share',
+                    name: '分享',
+                    icon: 'share',
                   },
                 ],
               },

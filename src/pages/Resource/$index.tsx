@@ -3,7 +3,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Card } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { FileExcelOutlined, FileOutlined, FolderOutlined } from '@ant-design/icons';
+import { FileOutlined } from '@ant-design/icons';
 import { history, request } from 'umi';
 import type { PopupProps } from './components/Popup';
 import Popup from './components/Popup';
@@ -12,13 +12,7 @@ import type { ResourceParamsProps, ResourceProps } from '@/typings';
 import { useModel } from '@@/plugin-model/useModel';
 import { layoutActionRef } from '@/app';
 import InfoDrawerProps from './components/InfoDrawer';
-
-const iconMap = {
-  folder: <FolderOutlined />,
-  unknow: <FileOutlined />,
-  xlsx: <FileExcelOutlined />,
-  xls: <FileExcelOutlined />,
-};
+import { iconMap } from '@/utils/icons';
 
 const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const { params: matchParams } = match;
@@ -200,6 +194,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
       </Card>
       {selected && (
         <InfoDrawerProps
+          action={ref}
           visible={selected !== undefined}
           // @ts-ignore
           value={selected}
