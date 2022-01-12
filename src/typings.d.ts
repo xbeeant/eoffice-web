@@ -25,6 +25,14 @@ export type ApiResponse = {
   code: number;
 };
 
+export type ShareResourceProps = {
+  resource: ResourceProps;
+  authCode: string;
+  shareId: string;
+  type: number;
+  endtime: string;
+};
+
 export type ResourceProps = {
   url: string;
   perm: string;

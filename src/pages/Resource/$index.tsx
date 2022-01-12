@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card } from 'antd';
+import { Card, Popconfirm } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { FileOutlined } from '@ant-design/icons';
@@ -8,7 +8,7 @@ import { history, request } from 'umi';
 import type { PopupProps } from './components/Popup';
 import Popup from './components/Popup';
 import { formatSize } from '@/utils/utils';
-import type { ResourceParamsProps, ResourceProps } from '@/typings';
+import type { ApiResponse, ResourceParamsProps, ResourceProps } from '@/typings';
 import { useModel } from '@@/plugin-model/useModel';
 import { layoutActionRef } from '@/app';
 import InfoDrawerProps from './components/InfoDrawer';
@@ -24,6 +24,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
 
   const [fid, setFid] = useState<string>('');
   const [selected, setSelected] = useState<ResourceProps>();
+  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
 
   const [popup, setPopup] = useState<PopupProps>({
     fid: matchParams?.fid,
@@ -128,6 +129,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     <PageContainer title={false}>
       <Card
         onContextMenu={(event) => {
+          event.preventDefault();
           event.stopPropagation();
           if (!popup.visible) {
             document.addEventListener(`click`, function onClickOutside() {
@@ -143,11 +145,47 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
             x: event.clientX,
             y: event.clientY,
           });
+          return false;
         }}
       >
         <ProTable<ResourceProps>
           columns={columns}
           actionRef={ref}
+          rowSelection={{
+            onChange: (selectedRowKeys: React.Key[]) => {
+              console.log(selectedRowKeys);
+              setSelectedKeys(selectedRowKeys);
+            },
+          }}
+          toolBarRender={() => {
+            return selectedKeys && selectedKeys.length === 0 ? (
+              false
+            ) : (
+              <Popconfirm
+                style={{ backgroundColor: 'red' }}
+                title="您确定要删除所选的文件（夹）吗？"
+                disabled={selectedKeys && selectedKeys.length === 0}
+                onConfirm={() => {
+                  request('/api/resource', {
+                    method: 'DELETE',
+                    data: {
+                      rid: selectedKeys,
+                    },
+                    requestType: 'form',
+                  }).then((response: ApiResponse) => {
+                    if (response.success) {
+                      setSelectedKeys([]);
+                      ref.current?.reload();
+                    }
+                  });
+                }}
+              >
+                批量删除
+              </Popconfirm>
+            );
+          }}
+          tableAlertRender={false}
+          tableAlertOptionRender={false}
           request={async (params, sorter, filter) => {
             // 表单搜索项会从 params 传入，传递给后端接口。
             return await request('/api/resource', {
@@ -163,6 +201,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           onRow={(record) => {
             return {
               onContextMenu: (event) => {
+                event.preventDefault();
                 event.stopPropagation();
                 if (!popup.visible) {
                   document.addEventListener(`click`, function onClickOutside() {
@@ -178,6 +217,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
                   x: event.clientX,
                   y: event.clientY,
                 });
+                return false;
               },
               onClick: (event) => {
                 event.stopPropagation();
@@ -186,8 +226,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
             };
           }}
           size="small"
-          toolBarRender={false}
-          rowKey="key"
+          rowKey="rid"
           search={false}
           dateFormatter="string"
         />

@@ -1,11 +1,21 @@
-import { Button, Collapse, Descriptions, Drawer, Input, Skeleton, Space, Tag } from 'antd';
-import type { ResourceProps, UserProps } from '@/typings';
+import {
+  Button,
+  Collapse,
+  Descriptions,
+  Drawer,
+  Input,
+  Popconfirm,
+  Skeleton,
+  Space,
+  Tag,
+} from 'antd';
+import type { ApiResponse, ResourceProps, UserProps } from '@/typings';
 import { formatSize } from '@/utils/utils';
 import type { MutableRefObject } from 'react';
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
 import ResourceAuthModal from '@/pages/Resource/components/ResourceAuthModal';
-import { EditOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { DeleteTwoTone, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-table';
 import ResourceShareModal from '@/pages/Resource/components/ResourceShareModal';
 
@@ -48,13 +58,13 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
   const [shareModalVisible, setShareModalVisible] = useState<boolean>(false);
 
   const loadData = async () => {
-    const response = await request('/api/resource/info', {
+    const json = await request('/api/resource/info', {
       params: {
         rid: value.rid,
       },
     });
 
-    setData(response.data || {});
+    setData(json.data || {});
   };
 
   useEffect(() => {
@@ -79,8 +89,8 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                     rid: data.rid,
                     name: name,
                   },
-                }).then((response) => {
-                  if (response.success) {
+                }).then((json: ApiResponse) => {
+                  if (json.success) {
                     setData({ ...data, ...{ name } });
                     action?.current?.reload();
                   }
@@ -102,6 +112,27 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                     setShareModalVisible(true);
                   }}
                 />
+                <Popconfirm
+                  title="确定删除此文件（夹）嘛?"
+                  onConfirm={() => {
+                    request('/api/resource', {
+                      method: 'DELETE',
+                      requestType: 'form',
+                      data: {
+                        rid: value.rid,
+                      },
+                    }).then((json: ApiResponse) => {
+                      if (json.success) {
+                        action?.current?.reload();
+                        onClose();
+                      }
+                    });
+                  }}
+                  okText="确认"
+                  cancelText="取消"
+                >
+                  <DeleteTwoTone twoToneColor="red" />
+                </Popconfirm>
               </Space>
             </>
           )}
