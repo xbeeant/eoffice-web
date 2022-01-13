@@ -2,12 +2,14 @@ import {
   Button,
   Collapse,
   Descriptions,
+  Divider,
   Drawer,
   Input,
   Popconfirm,
   Skeleton,
   Space,
   Tag,
+  Tooltip,
 } from 'antd';
 import type { ApiResponse, ResourceProps, UserProps } from '@/typings';
 import { formatSize } from '@/utils/utils';
@@ -15,7 +17,7 @@ import type { MutableRefObject } from 'react';
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
 import ResourceAuthModal from '@/pages/Resource/components/ResourceAuthModal';
-import { DeleteTwoTone, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { DeleteTwoTone, DownloadOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-table';
 import ResourceShareModal from '@/pages/Resource/components/ResourceShareModal';
 
@@ -102,16 +104,27 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
             <>
               <Space>
                 <span>{data.name}</span>
-                <EditOutlined
-                  onClick={() => {
-                    setEditTitleMode(true);
-                  }}
-                />
+                <Tooltip title="重命名">
+                  <EditOutlined
+                    onClick={() => {
+                      setEditTitleMode(true);
+                    }}
+                  />
+                </Tooltip>
+                <Divider />
                 <ShareAltOutlined
                   onClick={() => {
                     setShareModalVisible(true);
                   }}
                 />
+                {value.extension !== 'folder' && (
+                  <DownloadOutlined
+                    onClick={() => {
+                      window.open(`/api/resource/s?rid=${value.rid}&sid=${value.sid}`);
+                    }}
+                  />
+                )}
+                <Divider />
                 <Popconfirm
                   title="确定删除此文件（夹）嘛?"
                   onConfirm={() => {
@@ -158,7 +171,7 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
             </Panel>
             <Panel
               key="auth"
-              header="成员"
+              header="授权"
               extra={
                 <Button
                   type="text"

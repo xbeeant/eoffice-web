@@ -1,7 +1,7 @@
 import type { SelectProps } from 'antd';
 import { Form, Modal, Popconfirm, Select, Spin, Tabs } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import ProForm, { ProFormCheckbox } from '@ant-design/pro-form';
+import ProForm, { ProFormCheckbox, ProFormRadio, ProFormSelect } from '@ant-design/pro-form';
 import debounce from 'lodash/debounce';
 import { request } from 'umi';
 import type { UserProps } from '@/typings';
@@ -32,6 +32,7 @@ function DebounceSelect<
 >({ fetchOptions, debounceTimeout = 800, ...props }: DebounceSelectProps) {
   const [fetching, setFetching] = useState(false);
   const [options, setOptions] = useState<ValueType[]>([]);
+
   const fetchRef = useRef(0);
 
   const debounceFetcher = useMemo(() => {
@@ -82,6 +83,7 @@ const ResourceAuthModal = ({
 }) => {
   useEffect(() => {}, [rid]);
   const ref = useRef<ActionType>();
+  const [type, setType] = useState<string>('member');
 
   const columns: ProColumns<TableListItem>[] = [
     {
@@ -147,14 +149,14 @@ const ResourceAuthModal = ({
   return (
     <Modal
       width={1024}
-      title="成员管理"
+      title="授权管理"
       visible={visible}
       cancelText="关闭"
       onCancel={onCancel}
       okButtonProps={{ style: { display: 'none' } }}
     >
       <Tabs defaultActiveKey="1">
-        <TabPane tab="新增成员" key="1">
+        <TabPane tab="新增授权" key="1">
           <ProForm
             onFinish={async (values) => {
               // @ts-ignore
@@ -168,32 +170,66 @@ const ResourceAuthModal = ({
               }
             }}
           >
-            <Form.Item
-              name="users"
-              label="用户"
-              rules={[{ required: true, message: '请选择需要添加权限的用户!' }]}
-            >
-              <DebounceSelect
-                mode="multiple"
-                fetchOptions={(search) => {
-                  return request('/api/user/search', {
-                    params: {
-                      s: search,
-                    },
-                  }).then((response) => {
-                    if (response.success) {
-                      return response.data.map((user: UserProps) => ({
-                        label: `${user.nickname}`,
-                        value: user.uid,
-                      }));
-                    }
-                    return [];
+            <ProFormRadio.Group
+              fieldProps={{
+                onChange: (e) => {
+                  setType(e.target.value);
+                },
+              }}
+              label="授权类型"
+              name="type"
+              options={[
+                {
+                  label: '成员',
+                  value: 'member',
+                },
+                {
+                  label: '团队',
+                  value: 'team',
+                },
+              ]}
+            />
+            {type === 'member' && (
+              <Form.Item
+                name="users"
+                label="用户"
+                rules={[{ required: true, message: '请选择需要添加权限的用户!' }]}
+              >
+                <DebounceSelect
+                  mode="multiple"
+                  fetchOptions={(search) => {
+                    return request('/api/user/search', {
+                      params: {
+                        s: search,
+                      },
+                    }).then((response) => {
+                      if (response.success) {
+                        return response.data.map((user: UserProps) => ({
+                          label: `${user.nickname}`,
+                          value: user.uid,
+                        }));
+                      }
+                      return [];
+                    });
+                  }}
+                  placeholder="请选择需要添加权限的用户"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+            )}
+            {type === 'team' && (
+              <ProFormSelect
+                name="team"
+                label="群组"
+                request={() => {
+                  return request('/api/team/tree', {
+                    params: { type: 1 },
                   });
                 }}
-                placeholder="请选择需要添加权限的用户"
-                style={{ width: '100%' }}
+                placeholder="请选择至少一个群组"
+                rules={[{ required: true, message: '请选择至少一个群组!' }]}
               />
-            </Form.Item>
+            )}
             <ProFormCheckbox.Group
               name="perm"
               label="权限"

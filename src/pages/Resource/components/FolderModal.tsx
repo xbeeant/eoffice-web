@@ -2,6 +2,7 @@ import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { request } from 'umi';
 import type { MutableRefObject } from 'react';
 import type { ActionType } from '@ant-design/pro-table';
+import { layoutActionRef } from '@/app';
 
 export interface FolderModalProps {
   pfid?: string;
@@ -31,6 +32,7 @@ const FolderModal = ({ visible, pfid, onCancel, onOk }: FolderModalProps) => {
         });
 
         if (response.success) {
+          layoutActionRef?.current?.reload();
           onOk();
           return true;
         }
