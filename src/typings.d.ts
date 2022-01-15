@@ -54,6 +54,20 @@ export type ResourceProps = {
 
 export type UserProps = { nickname: string; uid: string; username: string };
 
+export type TeamProps = { gid: string | number; name: string; pgid: string; type: string };
+
+export type PermTargetProps = {
+  targetName: string;
+  targetType: number;
+  print: boolean;
+  view: boolean;
+  edit: boolean;
+  comment: boolean;
+  download: boolean;
+  pid: string;
+  type: number;
+};
+
 export type ResourceParamsProps = {
   match: { params: ResourceProps };
 };

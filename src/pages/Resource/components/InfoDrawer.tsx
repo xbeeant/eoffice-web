@@ -11,13 +11,20 @@ import {
   Tag,
   Tooltip,
 } from 'antd';
-import type { ApiResponse, ResourceProps, UserProps } from '@/typings';
+import type { ApiResponse, ResourceProps, PermTargetProps } from '@/typings';
 import { formatSize } from '@/utils/utils';
 import type { MutableRefObject } from 'react';
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
 import ResourceAuthModal from '@/pages/Resource/components/ResourceAuthModal';
-import { DeleteTwoTone, DownloadOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
+import {
+  DeleteTwoTone,
+  DownloadOutlined,
+  EditOutlined,
+  ShareAltOutlined,
+  UserOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-table';
 import ResourceShareModal from '@/pages/Resource/components/ResourceShareModal';
 
@@ -29,10 +36,26 @@ export type InfoDrawerProps = {
 };
 
 export interface ResourceDetailProps extends ResourceProps {
-  users?: UserProps[];
+  permed?: PermTargetProps[];
 }
 
+const IconMap = {
+  0: <UserOutlined />,
+  1: <TeamOutlined />,
+};
+
 const { Panel } = Collapse;
+
+const PermInfo = (value: PermTargetProps) => {
+  return (
+    <Space>
+      {value.edit && <span>编辑</span>}
+      {value.download && <span>下载</span>}
+      {value.view && <span>查看</span>}
+      {value.print && <span>打印</span>}
+    </Space>
+  );
+};
 
 const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
   const [editTitleMode, setEditTitleMode] = useState<boolean>(false);
@@ -112,40 +135,47 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                   />
                 </Tooltip>
                 <Divider />
-                <ShareAltOutlined
-                  onClick={() => {
-                    setShareModalVisible(true);
-                  }}
-                />
-                {value.extension !== 'folder' && (
-                  <DownloadOutlined
+                <Tooltip title="分享">
+                  <ShareAltOutlined
                     onClick={() => {
-                      window.open(`/api/resource/s?rid=${value.rid}&sid=${value.sid}`);
+                      setShareModalVisible(true);
                     }}
                   />
+                </Tooltip>
+
+                {value.extension !== 'folder' && (
+                  <Tooltip title="下载">
+                    <DownloadOutlined
+                      onClick={() => {
+                        window.open(`/api/resource/s?rid=${value.rid}&sid=${value.sid}`);
+                      }}
+                    />
+                  </Tooltip>
                 )}
                 <Divider />
-                <Popconfirm
-                  title="确定删除此文件（夹）嘛?"
-                  onConfirm={() => {
-                    request('/api/resource', {
-                      method: 'DELETE',
-                      requestType: 'form',
-                      data: {
-                        rid: value.rid,
-                      },
-                    }).then((json: ApiResponse) => {
-                      if (json.success) {
-                        action?.current?.reload();
-                        onClose();
-                      }
-                    });
-                  }}
-                  okText="确认"
-                  cancelText="取消"
-                >
-                  <DeleteTwoTone twoToneColor="red" />
-                </Popconfirm>
+                <Tooltip title="删除">
+                  <Popconfirm
+                    title="确定删除此文件（夹）嘛?"
+                    onConfirm={() => {
+                      request('/api/resource', {
+                        method: 'DELETE',
+                        requestType: 'form',
+                        data: {
+                          rid: value.rid,
+                        },
+                      }).then((json: ApiResponse) => {
+                        if (json.success) {
+                          action?.current?.reload();
+                          onClose();
+                        }
+                      });
+                    }}
+                    okText="确认"
+                    cancelText="取消"
+                  >
+                    <DeleteTwoTone twoToneColor="red" />
+                  </Popconfirm>
+                </Tooltip>
               </Space>
             </>
           )}
@@ -184,8 +214,10 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                 </Button>
               }
             >
-              {data.users?.map((user) => (
-                <Tag>{user.nickname}</Tag>
+              {data.permed?.map((item) => (
+                <Tooltip title={PermInfo(item)}>
+                  <Tag icon={IconMap[item.targetType]}>{item.targetName}</Tag>
+                </Tooltip>
               ))}
             </Panel>
           </Collapse>
@@ -193,6 +225,7 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
             <ResourceAuthModal
               rid={value.rid}
               visible={permModalVisible}
+              reload={() => loadData()}
               onCancel={() => {
                 setPermModalVisible(false);
               }}
@@ -202,6 +235,7 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
             <ResourceShareModal
               rid={value.rid}
               visible={shareModalVisible}
+              reload={() => loadData()}
               onCancel={() => {
                 setShareModalVisible(false);
               }}

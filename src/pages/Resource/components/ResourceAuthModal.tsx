@@ -1,13 +1,22 @@
 import type { SelectProps } from 'antd';
-import { Form, Modal, Popconfirm, Select, Spin, Tabs } from 'antd';
+import { Form, Modal, Popconfirm, Select, Space, Spin, Tabs } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ProForm, { ProFormCheckbox, ProFormRadio, ProFormSelect } from '@ant-design/pro-form';
 import debounce from 'lodash/debounce';
 import { request } from 'umi';
-import type { UserProps } from '@/typings';
+import type { ApiResponse, UserProps } from '@/typings';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
+import {
+  CheckCircleTwoTone,
+  CloseCircleTwoTone,
+  UserOutlined,
+  TeamOutlined,
+  ShareAltOutlined,
+  FileOutlined,
+  FolderOutlined,
+} from '@ant-design/icons';
+import { PermTargetProps } from '@/typings';
 
 export interface DebounceSelectProps<ValueType = any>
   extends Omit<SelectProps<ValueType>, 'options' | 'children'> {
@@ -15,17 +24,26 @@ export interface DebounceSelectProps<ValueType = any>
   debounceTimeout?: number;
 }
 
-export type TableListItem = {
-  pid: string;
-  name: string;
-  download: number;
-  print: string;
-  edit: string;
-  view: string;
-  comment: string;
-};
-
 const { TabPane } = Tabs;
+
+const IconMap = {
+  0: <UserOutlined />,
+  1: <TeamOutlined />,
+  10: <FolderOutlined />,
+  11: (
+    <>
+      <FolderOutlined />
+      <ShareAltOutlined />
+    </>
+  ),
+  20: <FileOutlined />,
+  21: (
+    <>
+      <FileOutlined />
+      <ShareAltOutlined />
+    </>
+  ),
+};
 
 function DebounceSelect<
   ValueType extends { key?: string; label: React.ReactNode; value: string | number } = any,
@@ -67,58 +85,72 @@ function DebounceSelect<
   );
 }
 
-const trueOrFalse = {
-  true: <CheckCircleTwoTone twoToneColor="red" />,
-  false: <CloseCircleTwoTone twoToneColor="gray" />,
-};
-
 const ResourceAuthModal = ({
   rid,
   visible,
   onCancel,
+  reload,
 }: {
   rid: string;
   visible: boolean;
   onCancel: () => void;
+  reload: () => void;
 }) => {
   useEffect(() => {}, [rid]);
   const ref = useRef<ActionType>();
   const [type, setType] = useState<string>('member');
 
-  const columns: ProColumns<TableListItem>[] = [
+  const trueOrFalse = (value: boolean) => {
+    return value ? (
+      <CheckCircleTwoTone twoToneColor="red" />
+    ) : (
+      <CloseCircleTwoTone twoToneColor="gray" />
+    );
+  };
+
+  const columns: ProColumns<PermTargetProps>[] = [
     {
-      title: '昵称',
-      dataIndex: 'nickname',
+      title: '昵称/群组',
+      dataIndex: 'targetName',
+      render: (_, value) => {
+        return (
+          <Space>
+            {IconMap[value.targetType]}
+            {IconMap[value.type]}
+            {value.targetName}
+          </Space>
+        );
+      },
     },
     {
       title: '查看',
       width: 80,
       dataIndex: 'view',
-      render: (_, value) => trueOrFalse[value.view],
+      render: (_, value) => trueOrFalse(value.view),
     },
     {
       title: '编辑',
       width: 80,
       dataIndex: 'edit',
-      render: (_, value) => trueOrFalse[value.edit],
+      render: (_, value) => trueOrFalse(value.edit),
     },
     {
       title: '下载',
       width: 80,
       dataIndex: 'download',
-      render: (_, value) => trueOrFalse[value.download],
+      render: (_, value) => trueOrFalse(value.download),
     },
     {
       title: '打印',
       width: 80,
       dataIndex: 'print',
-      render: (_, value) => trueOrFalse[value.print],
+      render: (_, value) => trueOrFalse(value.print),
     },
     {
       title: '分享',
       width: 80,
       dataIndex: 'share',
-      render: (_, value) => trueOrFalse[value.view],
+      render: (_, value) => trueOrFalse(value.view),
     },
     {
       title: '操作',
@@ -135,6 +167,10 @@ const ResourceAuthModal = ({
               data: {
                 pid: value.pid,
               },
+            }).then((response: ApiResponse) => {
+              if (response.success) {
+                reload();
+              }
             });
           }}
           okText="确定"
@@ -158,6 +194,7 @@ const ResourceAuthModal = ({
       <Tabs defaultActiveKey="1">
         <TabPane tab="新增授权" key="1">
           <ProForm
+            initialValues={{ type: 'member' }}
             onFinish={async (values) => {
               // @ts-ignore
               const response: ApiResponse = await request('/api/resource/perm', {
@@ -167,6 +204,7 @@ const ResourceAuthModal = ({
               });
               if (response.success) {
                 ref.current?.reload();
+                reload();
               }
             }}
           >
@@ -184,7 +222,7 @@ const ResourceAuthModal = ({
                   value: 'member',
                 },
                 {
-                  label: '团队',
+                  label: '群组',
                   value: 'team',
                 },
               ]}
@@ -259,8 +297,8 @@ const ResourceAuthModal = ({
             />
           </ProForm>
         </TabPane>
-        <TabPane tab="已授权成员" key="2">
-          <ProTable<TableListItem>
+        <TabPane tab="已授权成员/群组" key="2">
+          <ProTable<PermTargetProps>
             actionRef={ref}
             columns={columns}
             request={async (params, sorter, filter) => {

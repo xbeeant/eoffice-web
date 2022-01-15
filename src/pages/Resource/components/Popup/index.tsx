@@ -50,6 +50,7 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
       )}
       {fileModalVisible && (
         <FileUploadModal
+          action={'/api/resource/upload/save'}
           fid={fid || '0'}
           visible={fileModalVisible}
           onCancel={() => setFileModalVisible(false)}

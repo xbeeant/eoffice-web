@@ -1,20 +1,19 @@
-import type { MutableRefObject } from 'react';
-import { ModalForm } from '@ant-design/pro-form';
-import Uploader from '@/components/Uploader';
-import type { ActionType } from '@ant-design/pro-table';
+import { ModalForm, ProFormUploadButton } from '@ant-design/pro-form';
+import { request } from 'umi';
 
 export interface FileUploadProps {
   fid: string;
-  actionRef?: MutableRefObject<ActionType | undefined>;
   visible: boolean;
   onCancel: () => void;
   onOk: () => void;
+  rid?: string | number;
+  action: string;
 }
 
-const FileUploadModal = ({ visible, actionRef, fid, onCancel, onOk }: FileUploadProps) => {
+const FileUploadModal = ({ visible, fid, rid, onCancel, action, onOk }: FileUploadProps) => {
   return (
     <ModalForm<{
-      name: string;
+      file: any[];
     }>
       visible={visible}
       title="上传文件"
@@ -23,16 +22,34 @@ const FileUploadModal = ({ visible, actionRef, fid, onCancel, onOk }: FileUpload
         onCancel,
       }}
       width={380}
-      onFinish={async () => {
-        onOk();
+      onFinish={async (values) => {
+        const files = values.file.map((file: { response: { data: any } }) => {
+          return file.response.data;
+        });
+        request(action, {
+          method: 'POST',
+          requestType: 'form',
+          data: {
+            fid,
+            rid,
+            files: JSON.stringify(files),
+          },
+        }).then((response) => {
+          if (response.success) {
+            onOk();
+          }
+        });
         return false;
       }}
     >
-      <Uploader
-        key="upload"
+      <ProFormUploadButton
+        fieldProps={{
+          multiple: !rid,
+          maxCount: rid ? 1 : undefined,
+        }}
+        label="选择文件（夹）"
+        name="file"
         action={`/api/resource/upload?fid=${fid || ''}`}
-        afterUpload={() => actionRef?.current?.reload()}
-        text="选择文件"
       />
     </ModalForm>
   );

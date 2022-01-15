@@ -3,7 +3,13 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Card, Popconfirm, Space, Tooltip } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { DownloadOutlined, EditOutlined, FileOutlined } from '@ant-design/icons';
+import {
+  DownloadOutlined,
+  EditOutlined,
+  FileOutlined,
+  RollbackOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
 import { history, request } from 'umi';
 import type { PopupProps } from './components/Popup';
 import Popup from './components/Popup';
@@ -14,6 +20,7 @@ import InfoDrawerProps from './components/InfoDrawer';
 import MoveFolderModal from './components/MoveFolderModal';
 import { iconMap } from '@/utils/icons';
 import { layoutActionRef } from '@/app';
+import FileUploadModal from '@/pages/Resource/components/FileUploadModal';
 
 const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const { params: matchParams } = match;
@@ -27,6 +34,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const [selected, setSelected] = useState<ResourceProps>();
   const [moveModalVisible, setMoveModalVisible] = useState<boolean>(false);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
+  const [fileModalVisible, setFileModalVisible] = useState(false);
 
   const [popup, setPopup] = useState<PopupProps>({
     fid: matchParams?.fid,
@@ -62,8 +70,13 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
 
   const columns: ProColumns<ResourceProps>[] = [
     {
-      title: '操作',
-      width: 100,
+      title: (
+        <Space direction="horizontal">
+          <span>操作</span>
+          {fid && <RollbackOutlined onClick={() => history.goBack()} />}
+        </Space>
+      ),
+      width: 120,
       fixed: 'left',
       dataIndex: 'option',
       render: (_, record) => {
@@ -87,6 +100,17 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
                 onClick={(event) => {
                   event.stopPropagation();
                   window.open(`/api/resource/s?rid=${record.rid}&sid=${record.sid}`);
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="覆盖">
+              <Button
+                type="text"
+                icon={<UploadOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setSelected(record);
+                  setFileModalVisible(true);
                 }}
               />
             </Tooltip>
@@ -201,7 +225,9 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
               false
             ) : (
               <Space>
-                <Button onClick={() => setMoveModalVisible(true)}>批量移动</Button>
+                <Button type="text" onClick={() => setMoveModalVisible(true)}>
+                  批量移动
+                </Button>
                 <Popconfirm
                   style={{ backgroundColor: 'red' }}
                   title="您确定要删除所选的文件（夹）吗？"
@@ -274,7 +300,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           dateFormatter="string"
         />
       </Card>
-      {selected && (
+      {selected && !fileModalVisible && (
         <InfoDrawerProps
           action={ref}
           visible={selected !== undefined}
@@ -290,6 +316,23 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           actionRef={ref}
           fid={fid}
           onCancel={() => setMoveModalVisible(false)}
+        />
+      )}
+      {fileModalVisible && (
+        <FileUploadModal
+          action={'/api/resource/upload/overwrite'}
+          fid={fid || '0'}
+          rid={selected?.rid}
+          visible={fileModalVisible}
+          onCancel={() => {
+            setSelected(undefined);
+            setFileModalVisible(false);
+          }}
+          onOk={() => {
+            setSelected(undefined);
+            ref?.current?.reload();
+            setFileModalVisible(false);
+          }}
         />
       )}
       <Popup {...popup} />
