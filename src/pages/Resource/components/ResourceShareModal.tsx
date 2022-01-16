@@ -1,12 +1,11 @@
 import type { SelectProps } from 'antd';
-import { Form, Modal, Select, Spin } from 'antd';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Form, Modal, Select, Spin, TreeSelect } from 'antd';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, {
   ProFormCheckbox,
   ProFormDateTimePicker,
   ProFormRadio,
-  ProFormSelect,
 } from '@ant-design/pro-form';
 import debounce from 'lodash/debounce';
 import { request } from 'umi';
@@ -68,7 +67,19 @@ const ResourceShareModal = ({
   onCancel: () => void;
   reload: () => void;
 }) => {
-  useEffect(() => {}, [rid]);
+  const [data, setData] = useState([]);
+
+  const loadTeams = () => {
+    return request('/api/team/tree', {
+      params: { type: 1 },
+    }).then((res) => {
+      setData(res);
+    });
+  };
+
+  useEffect(() => {
+    loadTeams();
+  }, [rid]);
   const [type, setType] = useState<string>('member');
   // 绑定一个 ProFormInstance 实例
   const formRef = useRef<ProFormInstance<{}>>();
@@ -146,17 +157,19 @@ const ResourceShareModal = ({
           </Form.Item>
         )}
         {type === 'team' && (
-          <ProFormSelect
+          <Form.Item
             name="team"
             label="群组"
-            request={() => {
-              return request('/api/team/tree', {
-                params: { type: 1 },
-              });
-            }}
-            placeholder="请选择至少一个群组"
+            valuePropName="checked"
             rules={[{ required: true, message: '请选择至少一个群组!' }]}
-          />
+          >
+            <TreeSelect
+              treeDefaultExpandAll={true}
+              style={{ width: '100%' }}
+              placeholder="请选择至少一个群组"
+              treeData={data || []}
+            />
+          </Form.Item>
         )}
         <ProFormDateTimePicker name="endtime" label="截止日期" extra="未设置截止日期视为永不过期" />
         <ProFormCheckbox.Group

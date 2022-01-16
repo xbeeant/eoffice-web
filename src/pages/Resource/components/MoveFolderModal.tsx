@@ -1,8 +1,9 @@
-import { TreeSelect, Form, Card } from 'antd';
-import React, { MutableRefObject, useEffect, useState } from 'react';
+import { Card, Form, TreeSelect } from 'antd';
+import type { MutableRefObject} from 'react';
+import React, { useEffect, useState } from 'react';
 import { ModalForm } from '@ant-design/pro-form';
 import { request } from 'umi';
-import { ActionType } from '@ant-design/pro-table';
+import type { ActionType } from '@ant-design/pro-table';
 import { layoutActionRef } from '@/app';
 
 export type MoveFolderProps = {
@@ -14,7 +15,7 @@ export type MoveFolderProps = {
 };
 const MoveFolderModal = (props: MoveFolderProps) => {
   const { visible, onCancel, fid, rids, actionRef } = props;
-  console.log(props);
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 

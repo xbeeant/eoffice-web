@@ -49,7 +49,16 @@
   },
   {
     path: '/share',
-    component: './Share',
+    routes: [
+      {
+        path: '/share',
+        component: './Share',
+      },
+      {
+        path: '/share/view',
+        component: './Share/View',
+      },
+    ],
   },
   {
     path: '/res',

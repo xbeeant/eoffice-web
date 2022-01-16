@@ -1,9 +1,9 @@
 import { Modal } from 'antd';
 import { useRef } from 'react';
 import { request } from 'umi';
-import ProTable, { ActionType } from '@ant-design/pro-table';
-import { ProColumns } from '@ant-design/pro-table';
-import { UserProps } from '@/typings';
+import type { ActionType, ProColumns } from '@ant-design/pro-table';
+import ProTable from '@ant-design/pro-table';
+import type { UserProps } from '@/typings';
 
 export type LinkMemberModalProps = {
   visible: boolean;
@@ -67,6 +67,7 @@ const LinkMemberModal = ({ visible, onOk, reload, onCancel, gid }: LinkMemberMod
           // 表单搜索项会从 params 传入，传递给后端接口。
           const response = await request('/api/team/user/unlink', {
             params: { ...params, ...sorter, ...filter, gid },
+            skipErrorHandler: true,
           });
           if (response.success) {
             return {

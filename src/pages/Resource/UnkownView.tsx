@@ -4,22 +4,23 @@ import { Result, Skeleton } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 
 interface LocationProps extends Location {
-  query: { rid: string; sid: string };
+  query: { rid: string; share: string };
 }
 
 const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = ({ location }) => {
   const {
-    query: { rid },
+    query: { rid, share },
   } = location;
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<{ url?: string; name?: string }>({});
 
   const loadData = async () => {
     setLoading(true);
-    if (rid) {
+    if (rid || share) {
       const response = await request('/api/resource/detail', {
         params: {
           rid,
+          share,
         },
       });
       if (response.success) {
@@ -37,7 +38,7 @@ const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = (
     <PageContainer title={false} pageHeaderRender={false}>
       {loading && <Skeleton />}
       {!loading &&
-        (rid ? (
+        (rid || share ? (
           <Result
             status="warning"
             title="暂不支持该类型文件的在线预览，您可以下载到本地进行查看"

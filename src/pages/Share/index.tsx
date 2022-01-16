@@ -6,7 +6,6 @@ import { history } from '@@/core/history';
 import { formatSize } from '@/utils/utils';
 import { iconMap } from '@/utils/icons';
 import { useEffect, useRef, useState } from 'react';
-import { useModel } from '@@/plugin-model/useModel';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Tabs } from 'antd';
 import type { ShareResourceProps } from '@/typings';
@@ -14,15 +13,12 @@ import type { ShareResourceProps } from '@/typings';
 const { TabPane } = Tabs;
 
 const Share = () => {
-  const [pathmap, setPathmap] = useState([]);
-  const { initialState } = useModel('@@initialState');
   const ref = useRef<ActionType>();
   const [activeKey, setActiveKey] = useState<string>('tome');
 
   useEffect(() => {
     request('/api/config/pathmap').then((response) => {
       if (response.success) {
-        setPathmap(response.data);
         ref?.current?.reload();
       }
     });
@@ -49,11 +45,9 @@ const Share = () => {
                   });
                   break;
                 default:
-                  window.open(
-                    `/${pathmap[resource.extension] || 'unkown'}?rid=${resource.rid}&sid=${
-                      resource.sid
-                    }&k=${initialState?.currentUser?.userid}`,
-                  );
+                  history.push({
+                    pathname: `/share/view?id=${record.shareId}`,
+                  });
                   break;
               }
             }}
@@ -73,8 +67,14 @@ const Share = () => {
       renderText: (_, record) => formatSize(record.resource.size),
     },
     {
-      title: '类型',
+      title: '提取码',
       width: 100,
+      copyable: true,
+      dataIndex: 'authCode',
+    },
+    {
+      title: '类型',
+      width: 60,
       sorter: {
         multiple: 3,
       },
@@ -83,7 +83,7 @@ const Share = () => {
     },
     {
       title: '更新时间',
-      width: 200,
+      width: 150,
       dataIndex: 'updateAt',
       renderText: (_, record) => record.resource.updateAt,
       sorter: {
@@ -92,7 +92,7 @@ const Share = () => {
     },
     {
       title: '过期时间',
-      width: 200,
+      width: 150,
       dataIndex: 'endtime',
       renderText: (_, record) => record.endtime || '永不过期',
       sorter: {
