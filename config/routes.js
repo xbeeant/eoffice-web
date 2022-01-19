@@ -90,6 +90,11 @@
     redirect: '/res',
   },
   {
+    path: '/template',
+    name: 'template',
+    component: './Template',
+  },
+  {
     component: './404',
   },
 ];

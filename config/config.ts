@@ -61,15 +61,15 @@ export default defineConfig({
       apps: [
         {
           name: 'pdf',
-          entry: '//localhost/pdf',
+          entry: '//xbeeant.cn/e-office/pdf',
         },
         {
           name: 'markdown',
-          entry: '//localhost/markdown',
+          entry: '//xbeeant.cn/e-office/markdown',
         },
         {
           name: 'sheet',
-          entry: '//localhost/luckysheet',
+          entry: '//xbeeant.cn/e-office/sheet',
         },
       ],
     },

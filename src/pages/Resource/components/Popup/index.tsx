@@ -19,6 +19,7 @@ import FileUploadModal from '@/pages/Resource/components/FileUploadModal';
 import styles from './index.less';
 import { layoutActionRef } from '@/app';
 import { request } from 'umi';
+import NewFileModal from '@/pages/Resource/components/NewFileModal';
 
 const { SubMenu } = Menu;
 
@@ -34,6 +35,8 @@ export interface PopupProps {
 const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
   const [folderModalVisible, setFolderModalVisible] = useState(false);
   const [fileModalVisible, setFileModalVisible] = useState(false);
+  const [newFileModalVisible, setNewFileFileModalVisible] = useState(false);
+  const [newFileType, setNewFileType] = useState<string>('');
 
   return (
     <div className={styles.popup} style={{ left: `${x}px`, top: `${y}px` }}>
@@ -48,6 +51,18 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
           }}
         />
       )}
+      {newFileModalVisible && (
+        <NewFileModal
+          fid={fid || '0'}
+          visible={newFileModalVisible}
+          type={newFileType}
+          onCancel={() => setNewFileFileModalVisible(false)}
+          onOk={() => {
+            setNewFileFileModalVisible(true);
+            actionRef?.current?.reload();
+          }}
+        />
+      )}
       {fileModalVisible && (
         <FileUploadModal
           action={'/api/resource/upload/save'}
@@ -55,6 +70,17 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
           visible={fileModalVisible}
           onCancel={() => setFileModalVisible(false)}
           onOk={() => {
+            request('/api/resource/add', {
+              method: 'POST',
+              requestType: 'form',
+              data: {
+                type: newFileType,
+                fid,
+              },
+            }).then((response) => {
+              actionRef?.current?.reload();
+              console.log(response);
+            });
             actionRef?.current?.reload();
             setFileModalVisible(false);
           }}
@@ -74,23 +100,14 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
                 actionRef?.current?.reload();
                 layoutActionRef?.current?.reload();
                 break;
-              case 'add-word':
-              case 'add-excel':
-              case 'add-ppt':
-              case 'add-markdown':
+              case 'add-docx':
+              case 'add-xlsx':
+              case 'add-pptx':
+              case 'add-md':
               case 'add-sheet':
                 const type = e.key.substring(4);
-                request('/api/resource/add', {
-                  method: 'POST',
-                  requestType: 'form',
-                  data: {
-                    type,
-                    fid,
-                  },
-                }).then((response) => {
-                  actionRef?.current?.reload();
-                  console.log(response);
-                });
+                setNewFileType(type);
+                setNewFileFileModalVisible(true);
                 break;
               default:
                 console.warn('默认行为');
@@ -105,16 +122,16 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
               上传文件
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item key="add-word" icon={<FileWordOutlined />}>
+            <Menu.Item key="add-docx" icon={<FileWordOutlined />}>
               Word文档
             </Menu.Item>
-            <Menu.Item key="add-excel" icon={<FileExcelOutlined />}>
+            <Menu.Item key="add-xlsx" icon={<FileExcelOutlined />}>
               Excel文档
             </Menu.Item>
-            <Menu.Item key="add-ppt" icon={<FilePptOutlined />}>
+            <Menu.Item key="add-pptx" icon={<FilePptOutlined />}>
               PPT文档
             </Menu.Item>
-            <Menu.Item key="add-markdown" icon={<FileMarkdownOutlined />}>
+            <Menu.Item key="add-md" icon={<FileMarkdownOutlined />}>
               Markdown
             </Menu.Item>
             <Menu.Item key="add-sheet" icon={<FileExcelOutlined />}>

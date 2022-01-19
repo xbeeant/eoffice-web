@@ -8,6 +8,7 @@ export default {
   'menu.register-result': '注册结果',
   'menu.latest': '最近',
   'menu.team': '群组',
+  'menu.template': '模板',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',

@@ -12,6 +12,7 @@ const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = (
     query: { rid, share },
   } = location;
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>();
   const [data, setData] = useState<{ url?: string; name?: string }>({});
 
   const loadData = async () => {
@@ -22,10 +23,13 @@ const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = (
           rid,
           share,
         },
+        skipErrorHandler: true,
       });
       if (response.success) {
         // load content from url
         setData(response.data);
+      } else {
+        setError(response.msg);
       }
     }
   };
@@ -34,19 +38,24 @@ const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = (
     loadData().then(() => setLoading(false));
   }, [rid]);
 
+  const renderResult = () => {
+    if (error) {
+      return <Result status="error" title={error} />;
+    }
+
+    return (
+      <Result
+        status="warning"
+        title={'暂不支持该类型文件的在线预览，您可以下载到本地进行查看'}
+        extra={<a href={data.url}>下载</a>}
+      />
+    );
+  };
+
   return (
     <PageContainer title={false} pageHeaderRender={false}>
       {loading && <Skeleton />}
-      {!loading &&
-        (rid || share ? (
-          <Result
-            status="warning"
-            title="暂不支持该类型文件的在线预览，您可以下载到本地进行查看"
-            extra={<a href={data.url}>下载</a>}
-          />
-        ) : (
-          <div>参数不全</div>
-        ))}
+      {!loading && (rid || share ? renderResult() : <div>参数不全</div>)}
     </PageContainer>
   );
 };

@@ -1,7 +1,12 @@
 import type { SelectProps } from 'antd';
 import { Form, Modal, Popconfirm, Select, Space, Spin, Tabs } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import ProForm, { ProFormCheckbox, ProFormRadio, ProFormSelect } from '@ant-design/pro-form';
+import ProForm, {
+  ProFormCheckbox,
+  ProFormInstance,
+  ProFormRadio,
+  ProFormSelect,
+} from '@ant-design/pro-form';
 import debounce from 'lodash/debounce';
 import { request } from 'umi';
 import type { ApiResponse, UserProps } from '@/typings';
@@ -44,6 +49,12 @@ const IconMap = {
     </>
   ),
 };
+
+export interface FormProps {
+  type: 'member' | 'team';
+  users?: string[];
+  team?: string[];
+}
 
 function DebounceSelect<
   ValueType extends { key?: string; label: React.ReactNode; value: string | number } = any,
@@ -98,6 +109,7 @@ const ResourceAuthModal = ({
 }) => {
   useEffect(() => {}, [rid]);
   const ref = useRef<ActionType>();
+  const formRef = useRef<ProFormInstance<FormProps>>();
   const [type, setType] = useState<string>('member');
 
   const trueOrFalse = (value: boolean) => {
@@ -169,6 +181,7 @@ const ResourceAuthModal = ({
               },
             }).then((response: ApiResponse) => {
               if (response.success) {
+                ref.current?.reload();
                 reload();
               }
             });
@@ -194,6 +207,7 @@ const ResourceAuthModal = ({
       <Tabs defaultActiveKey="1">
         <TabPane tab="新增授权" key="1">
           <ProForm
+            formRef={formRef}
             initialValues={{ type: 'member' }}
             onFinish={async (values) => {
               // @ts-ignore
@@ -203,6 +217,8 @@ const ResourceAuthModal = ({
                 requestType: 'form',
               });
               if (response.success) {
+                // @ts-ignore
+                formRef.current?.resetFields({});
                 ref.current?.reload();
                 reload();
               }
