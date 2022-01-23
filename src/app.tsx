@@ -7,7 +7,13 @@ import { history, request as requests } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/eoffice/api';
-import { HistoryOutlined, HomeOutlined, ShareAltOutlined, TeamOutlined } from '@ant-design/icons';
+import {
+  HistoryOutlined,
+  HomeOutlined,
+  ShareAltOutlined,
+  TeamOutlined,
+  ContainerOutlined,
+} from '@ant-design/icons';
 import { message } from 'antd';
 import type { Route } from 'antd/lib/breadcrumb/Breadcrumb';
 
@@ -135,6 +141,7 @@ const IconMap = {
   history: <HistoryOutlined />,
   share: <ShareAltOutlined />,
   team: <TeamOutlined />,
+  template: <ContainerOutlined />,
 };
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
@@ -239,6 +246,11 @@ export const layout: ({ initialState }: { initialState: any }) => {
                     name: '群组',
                     icon: 'team',
                   },
+                  {
+                    path: '/template',
+                    name: '文档模板',
+                    icon: 'template',
+                  },
                 ],
               },
             ];
@@ -269,6 +281,11 @@ export const layout: ({ initialState }: { initialState: any }) => {
                     path: '/team',
                     name: '群组',
                     icon: 'team',
+                  },
+                  {
+                    path: '/template',
+                    name: '文档模板',
+                    icon: 'template',
                   },
                 ],
               },

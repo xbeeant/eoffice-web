@@ -2,7 +2,7 @@ import { request } from '@@/plugin-request/request';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { FileOutlined } from '@ant-design/icons';
-import { history } from '@@/core/history';
+import { history } from 'umi';
 import { formatSize } from '@/utils/utils';
 import { iconMap } from '@/utils/icons';
 import { useEffect, useRef, useState } from 'react';
@@ -46,7 +46,10 @@ const Share = () => {
                   break;
                 default:
                   history.push({
-                    pathname: `/share/view?id=${record.shareId}`,
+                    pathname: `/share/view`,
+                    query: {
+                      id: record.shareId,
+                    },
                   });
                   break;
               }

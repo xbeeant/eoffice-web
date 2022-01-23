@@ -1,6 +1,7 @@
 # eoffice web
+eoffice应用的前端。eoffice 致力于打造一套在线、多人实时协同办公的系统，支持word，Excel，PPT，UML，markdown等文件的编辑、预览、pdf的在线预览。
 
-致力于打造一套在线、多人实时协同办公的系统，支持word，Excel，PPT，UML，markdown的在线编辑、预览、pdf的在线预览。需要结合eoffice-server一起使用
+eoffice web 采用ant design 组件库，使用ant design pro基础框架结合qiankun框架将各个文件类型的渲染通过子应用的方式进行接入。
 
 ## 环境准备
 
@@ -38,4 +39,22 @@ npm run lint
 
 ```bash
 npm run lint:fix
+```
+
+### 子应用开发
+
+子应用负责资源的显示，通过API获取资源的信息、更新等操作。
+
+#### 接口
+
+获取资源详情
+
+```
+域名 + /api/resource/detail
+```
+
+返回：
+
+```
+
 ```

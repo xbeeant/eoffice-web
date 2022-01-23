@@ -135,24 +135,24 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                   />
                 </Tooltip>
                 <Divider />
-                <Tooltip title="分享">
-                  <ShareAltOutlined
-                    onClick={() => {
-                      setShareModalVisible(true);
-                    }}
-                  />
-                </Tooltip>
-
-                {value.extension !== 'folder' && (
+                {value.extension !== 'folder' && [
+                  <Tooltip title="分享">
+                    <ShareAltOutlined
+                      onClick={() => {
+                        setShareModalVisible(true);
+                      }}
+                    />
+                  </Tooltip>,
+                  <Divider />,
                   <Tooltip title="下载">
                     <DownloadOutlined
                       onClick={() => {
                         window.open(`/api/resource/s?rid=${value.rid}&sid=${value.sid}`);
                       }}
                     />
-                  </Tooltip>
-                )}
-                <Divider />
+                  </Tooltip>,
+                  <Divider />,
+                ]}
                 <Tooltip title="删除">
                   <Popconfirm
                     title="确定删除此文件（夹）嘛?"
@@ -199,27 +199,29 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                 <Descriptions.Item label="大小">{formatSize(data.size)}</Descriptions.Item>
               </Descriptions>
             </Panel>
-            <Panel
-              key="auth"
-              header="授权"
-              extra={
-                <Button
-                  type="text"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setPermModalVisible(true);
-                  }}
-                >
-                  管理
-                </Button>
-              }
-            >
-              {data.permed?.map((item) => (
-                <Tooltip title={PermInfo(item)}>
-                  <Tag icon={IconMap[item.targetType]}>{item.targetName}</Tag>
-                </Tooltip>
-              ))}
-            </Panel>
+            {value.extension === 'folder' && (
+              <Panel
+                key="auth"
+                header="授权"
+                extra={
+                  <Button
+                    type="text"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setPermModalVisible(true);
+                    }}
+                  >
+                    管理
+                  </Button>
+                }
+              >
+                {data.permed?.map((item) => (
+                  <Tooltip title={PermInfo(item)}>
+                    <Tag icon={IconMap[item.targetType]}>{item.targetName}</Tag>
+                  </Tooltip>
+                ))}
+              </Panel>
+            )}
           </Collapse>
           {permModalVisible && (
             <ResourceAuthModal

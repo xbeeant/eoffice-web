@@ -21,6 +21,7 @@ import MoveFolderModal from './components/MoveFolderModal';
 import { iconMap } from '@/utils/icons';
 import { layoutActionRef } from '@/app';
 import FileUploadModal from '@/pages/Resource/components/FileUploadModal';
+import defaultSettings from '../../../config/defaultSettings';
 
 const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const { params: matchParams } = match;
@@ -62,9 +63,9 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
 
   const view = (mode: string, value: ResourceProps) => {
     window.open(
-      `/${pathmap[value.extension] || 'unkown'}?rid=${value.rid}&sid=${value.sid}&k=${
-        initialState?.currentUser?.userid
-      }&mode=${mode}`,
+      `${defaultSettings.basepath}/${pathmap[value.extension] || 'unkown'}?rid=${value.rid}&sid=${
+        value.sid
+      }&k=${initialState?.currentUser?.userid}&mode=${mode}`,
     );
   };
 

@@ -19,9 +19,9 @@ declare module 'bizcharts-plugin-slider';
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 
-export type ApiResponse = {
+export type ApiResponse<T> = {
   success: boolean;
-  data?: any;
+  data: T;
   code: number;
 };
 

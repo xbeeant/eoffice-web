@@ -46,10 +46,10 @@ export default defineConfig({
   ignoreMomentLocale: true,
   proxy: proxy[REACT_APP_ENV || 'dev'],
   manifest: {
-    basePath: '/e-office',
+    basePath: defaultSettings.basepath + '/',
   },
-  publicPath: '/e-office/',
-  base: '/e-office',
+  publicPath: defaultSettings.basepath + '/',
+  base: defaultSettings.basepath,
   // Fast Refresh 热更新
   fastRefresh: {},
   nodeModulesTransform: { type: 'none' },
