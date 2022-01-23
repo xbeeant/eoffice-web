@@ -18,6 +18,7 @@ import FileUploadModal from '@/pages/Resource/components/FileUploadModal';
 // @ts-ignore
 import styles from './index.less';
 import { layoutActionRef } from '@/app';
+import { request } from 'umi';
 import NewFileModal from '@/pages/Resource/components/NewFileModal';
 
 const { SubMenu } = Menu;
@@ -57,7 +58,7 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
           type={newFileType}
           onCancel={() => setNewFileFileModalVisible(false)}
           onOk={() => {
-            setNewFileFileModalVisible(false);
+            setNewFileFileModalVisible(true);
             actionRef?.current?.reload();
           }}
         />
@@ -69,6 +70,17 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
           visible={fileModalVisible}
           onCancel={() => setFileModalVisible(false)}
           onOk={() => {
+            request('/api/resource/add', {
+              method: 'POST',
+              requestType: 'form',
+              data: {
+                type: newFileType,
+                fid,
+              },
+            }).then((response) => {
+              actionRef?.current?.reload();
+              console.log(response);
+            });
             actionRef?.current?.reload();
             setFileModalVisible(false);
           }}

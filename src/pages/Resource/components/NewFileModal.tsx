@@ -14,7 +14,7 @@ export interface FileUploadProps {
 
 const NewFileModal = ({ visible, fid, type, onCancel, onOk }: FileUploadProps) => {
   const [data, setData] = useState([]);
-  console.log(type);
+
   // 加载群组树data
   const loadData = () => {
     request('/api/template/tree', {

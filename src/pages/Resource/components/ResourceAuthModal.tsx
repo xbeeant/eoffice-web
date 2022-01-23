@@ -217,10 +217,10 @@ const ResourceAuthModal = ({
                 requestType: 'form',
               });
               if (response.success) {
-                reload();
                 // @ts-ignore
-                formRef.current?.resetFields();
+                formRef.current?.resetFields({});
                 ref.current?.reload();
+                reload();
               }
             }}
           >
