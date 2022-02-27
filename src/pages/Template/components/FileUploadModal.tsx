@@ -25,7 +25,7 @@ const FileUploadModal = ({ visible, accept, cid, onCancel, onOk }: FileUploadPro
         const files = values.file.map((file: { response: { data: any } }) => {
           return file.response.data;
         });
-        request('/api/template', {
+        request('/eoffice/api/template', {
           method: 'POST',
           requestType: 'form',
           data: {
@@ -48,7 +48,7 @@ const FileUploadModal = ({ visible, accept, cid, onCancel, onOk }: FileUploadPro
         }}
         label="选择文件（夹）"
         name="file"
-        action={`/api/resource/upload`}
+        action={`/eoffice/api/resource/upload`}
       />
     </ModalForm>
   );

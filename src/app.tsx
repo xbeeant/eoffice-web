@@ -103,7 +103,7 @@ export async function getInitialState(): Promise<{
     console.log(history.location);
     if (history.location.pathname.indexOf('/res/') === 0) {
       const fid = history.location.pathname.substring(5);
-      const response = await requests('/api/folder/breadcrumb?fid=' + fid);
+      const response = await requests('/eoffice/api/folder/breadcrumb?fid=' + fid);
       return response.data || [];
     }
 
@@ -116,6 +116,7 @@ export async function getInitialState(): Promise<{
   };
 
   console.log('fetch finished');
+  console.log('is login : ', whitePath[history.location.pathname] === undefined);
   // 如果是登录页面，不执行
   if (whitePath[history.location.pathname] === undefined) {
     const currentUser = await fetchUserInfo();
@@ -146,9 +147,10 @@ const IconMap = {
 
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] =>
   menus.map(({ icon, children, ...item }) => ({
-    ...item,
     icon: icon && IconMap[icon as string],
     children: children && loopMenuItem(children),
+    path: item.path,
+    name: item.name,
   }));
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
@@ -165,7 +167,6 @@ export const layout: ({ initialState }: { initialState: any }) => {
   menu: { request: () => Promise<MenuDataItem[]> };
   breadcrumbProps: { minLength: number; separator: string };
 } = ({ initialState }) => {
-  console.log(initialState);
   return {
     actionRef: layoutActionRef,
     rightContentRender: () => <RightContent />,
@@ -216,38 +217,38 @@ export const layout: ({ initialState }: { initialState: any }) => {
       },
       request: async () => {
         if (initialState?.currentUser?.userid) {
-          const response = await requests('/api/menu');
+          const response = await requests('/eoffice/api/menu');
           let menus;
           if (response.length === 0) {
             console.log('no sub menus');
             menus = [
               {
                 path: '/',
+                key: 'welcome',
                 name: 'welcome',
                 icon: 'home',
                 children: [
                   {
-                    path: '/latest',
-                    name: '最近',
-                    icon: 'history',
-                  },
-                  {
-                    path: '/res',
-                    name: '我的文档',
+                    path: '/res/0',
+                    key: 'res0',
+                    name: '文档',
                     icon: 'home',
                   },
                   {
                     path: '/share',
                     name: '分享',
+                    key: 'share',
                     icon: 'share',
                   },
                   {
                     path: '/team',
+                    key: 'team',
                     name: '群组',
                     icon: 'team',
                   },
                   {
                     path: '/template',
+                    key: 'template',
                     name: '文档模板',
                     icon: 'template',
                   },
@@ -259,31 +260,31 @@ export const layout: ({ initialState }: { initialState: any }) => {
               {
                 path: '/',
                 name: 'welcome',
+                key: 'welcome',
                 icon: 'home',
                 children: [
                   {
-                    path: '/latest',
-                    name: '最近',
-                    icon: 'history',
-                  },
-                  {
-                    path: '/res',
-                    name: '我的文档',
+                    path: '/res/0',
+                    key: 'res0',
+                    name: '文档',
                     icon: 'home',
                     children: response,
                   },
                   {
                     path: '/share',
+                    key: 'share',
                     name: '分享',
                     icon: 'share',
                   },
                   {
                     path: '/team',
+                    key: 'team',
                     name: '群组',
                     icon: 'team',
                   },
                   {
                     path: '/template',
+                    key: 'template',
                     name: '文档模板',
                     icon: 'template',
                   },
@@ -331,3 +332,21 @@ export const layout: ({ initialState }: { initialState: any }) => {
     ...initialState?.settings,
   };
 };
+
+// 从接口中获取子应用配置，export 出的 qiankun 变量是一个 promise
+export const qiankun = fetch('/eoffice/api/slaves')
+  .then((res) => res.json())
+  .then((apps) => {
+    console.log(apps);
+    return {
+      // 注册子应用信息
+      apps,
+      // 完整生命周期钩子请看 https://qiankun.umijs.org/zh/api/#registermicroapps-apps-lifecycles
+      lifeCycles: {
+        afterMount: (props: any) => {
+          console.log(props);
+        },
+      },
+      // 支持更多的其他配置，详细看这里 https://qiankun.umijs.org/zh/api/#start-opts
+    };
+  });

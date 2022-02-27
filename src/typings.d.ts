@@ -1,3 +1,5 @@
+import { Pagination } from 'antd';
+
 declare module 'slash2';
 declare module '*.css';
 declare module '*.less';
@@ -17,12 +19,15 @@ declare module 'mockjs';
 declare module 'react-fittext';
 declare module 'bizcharts-plugin-slider';
 
-declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
-
 export type ApiResponse<T> = {
   success: boolean;
   data: T;
   code: number;
+};
+
+export type ShareProps = {
+  extension: string;
+  share: string;
 };
 
 export type ShareResourceProps = {
@@ -75,4 +80,15 @@ export type ResourceParamsProps = {
 export type FolderProps = {
   fid: string;
   name: string;
+};
+
+export type VersionHistoryProps = {
+  actor: string;
+  createAt: string;
+  size: number;
+};
+
+export type VersionHistoryPageProps = {
+  list: VersionHistory[];
+  pagination: PaginationProps;
 };

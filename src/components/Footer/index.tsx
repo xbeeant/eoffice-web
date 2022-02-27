@@ -8,7 +8,5 @@ export default () => {
     defaultMessage: '小标办公室',
   });
 
-  const currentYear = new Date().getFullYear();
-
-  return <DefaultFooter copyright={`${currentYear} ${defaultMessage}`} links={false} />;
+  return <DefaultFooter copyright={`2022 ${defaultMessage}`} links={false} />;
 };

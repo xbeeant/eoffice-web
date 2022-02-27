@@ -18,7 +18,6 @@ import FileUploadModal from '@/pages/Resource/components/FileUploadModal';
 // @ts-ignore
 import styles from './index.less';
 import { layoutActionRef } from '@/app';
-import { request } from 'umi';
 import NewFileModal from '@/pages/Resource/components/NewFileModal';
 
 const { SubMenu } = Menu;
@@ -58,29 +57,18 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
           type={newFileType}
           onCancel={() => setNewFileFileModalVisible(false)}
           onOk={() => {
-            setNewFileFileModalVisible(true);
+            setNewFileFileModalVisible(false);
             actionRef?.current?.reload();
           }}
         />
       )}
       {fileModalVisible && (
         <FileUploadModal
-          action={'/api/resource/upload/save'}
+          action={'/eoffice/api/resource/upload/save'}
           fid={fid || '0'}
           visible={fileModalVisible}
           onCancel={() => setFileModalVisible(false)}
           onOk={() => {
-            request('/api/resource/add', {
-              method: 'POST',
-              requestType: 'form',
-              data: {
-                type: newFileType,
-                fid,
-              },
-            }).then((response) => {
-              actionRef?.current?.reload();
-              console.log(response);
-            });
             actionRef?.current?.reload();
             setFileModalVisible(false);
           }}
@@ -105,6 +93,7 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
               case 'add-pptx':
               case 'add-md':
               case 'add-sheet':
+              case 'add-drawio':
                 const type = e.key.substring(4);
                 setNewFileType(type);
                 setNewFileFileModalVisible(true);
@@ -136,6 +125,9 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
             </Menu.Item>
             <Menu.Item key="add-sheet" icon={<FileExcelOutlined />}>
               在线表格
+            </Menu.Item>
+            <Menu.Item key="add-drawio" icon={<FileExcelOutlined />}>
+              UML
             </Menu.Item>
           </SubMenu>
           <Menu.Item key="reload" icon={<ReloadOutlined />}>

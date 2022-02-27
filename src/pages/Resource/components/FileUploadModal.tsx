@@ -49,7 +49,7 @@ const FileUploadModal = ({ visible, fid, rid, onCancel, action, onOk }: FileUplo
         }}
         label="选择文件（夹）"
         name="file"
-        action={`/api/resource/upload?fid=${fid || ''}`}
+        action={`/eoffice/api/resource/upload?fid=${fid || ''}`}
       />
     </ModalForm>
   );

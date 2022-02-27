@@ -4,23 +4,26 @@ import { Image, Skeleton } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 
 interface LocationProps extends Location {
-  query: { rid: string; sid: string };
+  query: { rid: string; share: string; mode: 'view' | 'edit'; shareId: string };
 }
 
 const ImageView: ({ location }: { location: LocationProps }) => JSX.Element = ({ location }) => {
   const {
-    query: { rid },
+    query: { rid, share, shareId },
   } = location;
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<{ url?: string; name?: string }>({});
 
   const loadData = async () => {
     setLoading(true);
-    if (rid) {
-      const response = await request('/api/resource/detail', {
+    if (rid || share) {
+      const response = await request('/eoffice/api/resource/detail', {
         params: {
           rid,
+          share,
+          shareId,
         },
+        skipErrorHandler: true,
       });
       if (response.success) {
         // load content from url
@@ -37,7 +40,7 @@ const ImageView: ({ location }: { location: LocationProps }) => JSX.Element = ({
     <PageContainer title={false} pageHeaderRender={false}>
       {loading && <Skeleton />}
       {!loading &&
-        (rid ? (
+        (rid || share ? (
           <div
             style={{
               textAlign: 'center',

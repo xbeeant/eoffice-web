@@ -18,7 +18,7 @@ const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = (
   const loadData = async () => {
     setLoading(true);
     if (rid || share) {
-      const response = await request('/api/resource/detail', {
+      const response = await request('/eoffice/api/resource/detail', {
         params: {
           rid,
           share,

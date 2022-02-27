@@ -88,7 +88,7 @@ export default (): React.ReactNode => {
           actionRef={ref}
           request={async (params, sorter, filter) => {
             // 表单搜索项会从 params 传入，传递给后端接口。
-            return await request('/api/resource', {
+            return await request('/eoffice/api/resource', {
               params: { ...params, ...sorter, ...filter },
             });
           }}

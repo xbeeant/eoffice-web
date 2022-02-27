@@ -8,7 +8,10 @@ import { iconMap } from '@/utils/icons';
 import { useEffect, useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Tabs } from 'antd';
-import type { ShareResourceProps } from '@/typings';
+import type { ShareProps, ShareResourceProps } from '@/typings';
+import { ApiResponse } from '@/typings';
+import defaultSettings from '../../../config/defaultSettings';
+import { useModel } from '@@/plugin-model/useModel';
 
 const { TabPane } = Tabs;
 
@@ -16,13 +19,27 @@ const Share = () => {
   const ref = useRef<ActionType>();
   const [activeKey, setActiveKey] = useState<string>('tome');
 
+  const [pathmap, setPathmap] = useState([]);
+  const { initialState } = useModel('@@initialState');
+
   useEffect(() => {
-    request('/api/config/pathmap').then((response) => {
+    request('/eoffice/api/config/pathmap').then((response) => {
       if (response.success) {
+        setPathmap(response.data);
         ref?.current?.reload();
       }
     });
   }, []);
+
+  const view = (shareId: string, data: ShareProps) => {
+    window.open(
+      `${defaultSettings.basepath}/${
+        pathmap[data.extension] || 'unkown'
+      }?share=${encodeURIComponent(data.share)}&shareId=${shareId}&k=${
+        initialState?.currentUser?.userid
+      }&mode='view'`,
+    );
+  };
 
   const columns: ProColumns<ShareResourceProps>[] = [
     {
@@ -45,11 +62,17 @@ const Share = () => {
                   });
                   break;
                 default:
-                  history.push({
-                    pathname: `/share/view`,
-                    query: {
-                      id: record.shareId,
+                  request('/eoffice/api/resource/share', {
+                    requestType: 'form',
+                    method: 'POST',
+                    data: {
+                      shareId: record.shareId,
+                      authCode: record.authCode,
                     },
+                  }).then((res: ApiResponse<ShareProps>) => {
+                    if (res.success) {
+                      view(record.shareId, res.data);
+                    }
                   });
                   break;
               }
@@ -115,7 +138,7 @@ const Share = () => {
                 columns={columns}
                 request={async (params, sorter, filter) => {
                   // 表单搜索项会从 params 传入，传递给后端接口。
-                  const response = await request('/api/share', {
+                  const response = await request('/eoffice/api/share', {
                     skipErrorHandler: true,
                     params: {
                       ...params,
@@ -159,7 +182,7 @@ const Share = () => {
                 columns={columns}
                 request={async (params, sorter, filter) => {
                   // 表单搜索项会从 params 传入，传递给后端接口。
-                  const response = await request('/api/share/myshare', {
+                  const response = await request('/eoffice/api/share/myshare', {
                     skipErrorHandler: true,
                     params: {
                       ...params,

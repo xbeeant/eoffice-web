@@ -33,6 +33,11 @@
     microApp: 'markdown',
   },
   {
+    path: '/office',
+    layout: false,
+    microApp: 'office',
+  },
+  {
     path: '/sheet',
     layout: false,
     microApp: 'sheet',
@@ -48,37 +53,8 @@
     component: './Resource/ImageView',
   },
   {
-    path: '/share',
-    routes: [
-      {
-        path: '/share',
-        component: './Share',
-      },
-      {
-        path: '/share/view',
-        component: './Share/View',
-      },
-    ],
-  },
-  {
-    path: '/res',
-    name: 'welcome',
-    routes: [
-      {
-        path: '/res',
-        name: 'welcome',
-        component: './Resource/$index',
-      },
-      {
-        path: '/res/:fid',
-        component: './Resource/$index',
-      },
-    ],
-  },
-  {
-    path: '/team',
-    name: 'team',
-    component: './Team',
+    path: '/search',
+    component: './Search',
   },
   {
     path: '/latest',
@@ -87,12 +63,44 @@
   },
   {
     path: '/',
-    redirect: '/res',
-  },
-  {
-    path: '/template',
-    name: 'template',
-    component: './Template',
+    name: 'welcome',
+    routes: [
+      {
+        path: '/',
+        redirect: '/res/0',
+      },
+      {
+        path: '/share',
+        routes: [
+          {
+            path: '/share',
+            redirect: '/share/index',
+          },
+          {
+            path: '/share/index',
+            component: './Share',
+          },
+          {
+            path: '/share/view',
+            component: './Share/View',
+          },
+        ],
+      },
+      {
+        path: '/res/:fid',
+        component: './Resource/$index',
+      },
+      {
+        path: '/team',
+        name: 'team',
+        component: './Team',
+      },
+      {
+        path: '/template',
+        name: 'template',
+        component: './Template',
+      },
+    ],
   },
   {
     component: './404',

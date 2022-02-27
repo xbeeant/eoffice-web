@@ -22,6 +22,8 @@ import { iconMap } from '@/utils/icons';
 import { layoutActionRef } from '@/app';
 import FileUploadModal from '@/pages/Resource/components/FileUploadModal';
 import defaultSettings from '../../../config/defaultSettings';
+import ResourceAuthModal from '@/pages/Resource/components/ResourceAuthModal';
+import ResourceShareModal from '@/pages/Resource/components/ResourceShareModal';
 
 const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const { params: matchParams } = match;
@@ -36,6 +38,8 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const [moveModalVisible, setMoveModalVisible] = useState<boolean>(false);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [fileModalVisible, setFileModalVisible] = useState(false);
+  const [permModalVisible, setPermModalVisible] = useState<boolean>(false);
+  const [shareModalVisible, setShareModalVisible] = useState<boolean>(false);
 
   const [popup, setPopup] = useState<PopupProps>({
     fid: matchParams?.fid,
@@ -100,7 +104,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
                 disabled={record.extension === 'folder'}
                 onClick={(event) => {
                   event.stopPropagation();
-                  window.open(`/api/resource/s?rid=${record.rid}&sid=${record.sid}`);
+                  window.open(`/eoffice/api/resource/s?rid=${record.rid}&sid=${record.sid}`);
                 }}
               />
             </Tooltip>
@@ -177,7 +181,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   ];
 
   useEffect(() => {
-    request('/api/config/pathmap').then((response) => {
+    request('/eoffice/api/config/pathmap').then((response) => {
       if (response.success) {
         setPathmap(response.data);
         ref?.current?.reload();
@@ -187,9 +191,28 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     setFid(matchParams.fid);
   }, [matchParams]);
 
+  const renderExtra = () => {
+    if (matchParams.fid) {
+      return (
+        <>
+          <Button
+            onClick={(event) => {
+              event.stopPropagation();
+              setPermModalVisible(true);
+            }}
+          >
+            授权管理
+          </Button>
+        </>
+      );
+    }
+
+    return <></>;
+  };
+
   // @ts-ignore
   return (
-    <PageContainer title={false}>
+    <PageContainer extra={renderExtra()}>
       <Card
         onContextMenu={(event) => {
           event.preventDefault();
@@ -234,13 +257,13 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
                   title="您确定要删除所选的文件（夹）吗？"
                   disabled={selectedKeys && selectedKeys.length === 0}
                   onConfirm={() => {
-                    request('/api/resource', {
+                    request('/eoffice/api/resource', {
                       method: 'DELETE',
                       data: {
                         rid: selectedKeys,
                       },
                       requestType: 'form',
-                    }).then((response: ApiResponse) => {
+                    }).then((response: ApiResponse<any>) => {
                       if (response.success) {
                         setSelectedKeys([]);
                         layoutActionRef?.current?.reload();
@@ -258,7 +281,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           tableAlertOptionRender={false}
           request={async (params, sorter, filter) => {
             // 表单搜索项会从 params 传入，传递给后端接口。
-            return await request('/api/resource', {
+            return await request('/eoffice/api/resource', {
               params: {
                 ...params,
                 sorter: JSON.stringify(sorter),
@@ -301,6 +324,26 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           dateFormatter="string"
         />
       </Card>
+      {permModalVisible && (
+        <ResourceAuthModal
+          rid={matchParams.fid}
+          visible={permModalVisible}
+          reload={() => {}}
+          onCancel={() => {
+            setPermModalVisible(false);
+          }}
+        />
+      )}
+      {shareModalVisible && (
+        <ResourceShareModal
+          rid={matchParams.fid}
+          visible={shareModalVisible}
+          reload={() => {}}
+          onCancel={() => {
+            setShareModalVisible(false);
+          }}
+        />
+      )}
       {selected && !fileModalVisible && (
         <InfoDrawerProps
           action={ref}
@@ -321,7 +364,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
       )}
       {fileModalVisible && (
         <FileUploadModal
-          action={'/api/resource/upload/overwrite'}
+          action={'/eoffice/api/resource/upload/overwrite'}
           fid={fid || '0'}
           rid={selected?.rid}
           visible={fileModalVisible}

@@ -70,7 +70,7 @@ const ResourceShareModal = ({
   const [data, setData] = useState([]);
 
   const loadTeams = () => {
-    return request('/api/team/tree', {
+    return request('/eoffice/api/team/tree', {
       params: { type: 1 },
     }).then((res) => {
       setData(res);
@@ -98,7 +98,7 @@ const ResourceShareModal = ({
         initialValues={{ type: 'member' }}
         onFinish={async (values) => {
           // @ts-ignore
-          const response: ApiResponse = await request('/api/share', {
+          const response: ApiResponse = await request('/eoffice/api/share', {
             data: { rid, ...values },
             method: 'POST',
             requestType: 'form',
@@ -137,7 +137,7 @@ const ResourceShareModal = ({
             <DebounceSelect
               mode="multiple"
               fetchOptions={(search) => {
-                return request('/api/user/search', {
+                return request('/eoffice/api/user/search', {
                   params: {
                     s: search,
                   },

@@ -21,7 +21,7 @@ const Team = () => {
   // 加载群组树data
   const loadData = () => {
     setLoading(true);
-    request('/api/team/tree', {
+    request('/eoffice/api/team/tree', {
       params: { type: 1 },
     }).then((res) => {
       if (!res || res?.length === 0) {
@@ -65,7 +65,7 @@ const Team = () => {
         <a
           key="remove"
           onClick={() => {
-            request('/api/team/user', {
+            request('/eoffice/api/team/user', {
               method: 'DELETE',
               data: { uid: record.uid, gid: selected.gid },
               requestType: 'form',
@@ -102,10 +102,10 @@ const Team = () => {
 
   const delGroup = (gid: string | number) => {
     // 删除群组
-    request(`/api/team/${gid}`, {
+    request(`/eoffice/api/team/${gid}`, {
       method: 'DELETE',
       requestType: 'form',
-    }).then((res: ApiResponse) => {
+    }).then((res: ApiResponse<any>) => {
       if (res.success) {
         loadData();
       }
@@ -153,7 +153,7 @@ const Team = () => {
                 actionRef={memberRef}
                 request={async (params, sorter, filter) => {
                   // 表单搜索项会从 params 传入，传递给后端接口。
-                  const response = await request('/api/team/user', {
+                  const response = await request('/eoffice/api/team/user', {
                     params: { ...params, ...sorter, ...filter, gid: selected?.gid },
                     skipErrorHandler: true,
                   });

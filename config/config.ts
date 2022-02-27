@@ -27,6 +27,9 @@ export default defineConfig({
     // default true, when it is true, will use `navigator.language` overwrite default
     baseNavigator: true,
   },
+  history: {
+    type: 'hash',
+  },
   dynamicImport: {
     loading: '@ant-design/pro-layout/es/PageLoading',
   },
@@ -56,22 +59,6 @@ export default defineConfig({
   webpack5: {},
   exportStatic: {},
   qiankun: {
-    master: {
-      // 注册子应用信息
-      apps: [
-        {
-          name: 'pdf',
-          entry: '//xbeeant.cn/e-office/pdf',
-        },
-        {
-          name: 'markdown',
-          entry: '//xbeeant.cn/e-office/markdown',
-        },
-        {
-          name: 'sheet',
-          entry: '//xbeeant.cn/e-office/sheet',
-        },
-      ],
-    },
+    master: {},
   },
 });

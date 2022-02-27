@@ -5,16 +5,11 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { useModel } from '@@/plugin-model/useModel';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
 import defaultSettings from '../../../config/defaultSettings';
-import { ApiResponse } from '@/typings';
+import { ApiResponse, ShareProps } from '@/typings';
 
 interface LocationProps extends Location {
   query: { id: string };
 }
-
-type ShareProps = {
-  extension: string;
-  share: string;
-};
 
 const View: ({ location }: { location: LocationProps }) => JSX.Element = ({ location }) => {
   const {
@@ -26,7 +21,6 @@ const View: ({ location }: { location: LocationProps }) => JSX.Element = ({ loca
   const { initialState } = useModel('@@initialState');
 
   const view = (data: ShareProps) => {
-    console.log(data);
     window.open(
       `${defaultSettings.basepath}/${
         pathmap[data.extension] || 'unkown'
@@ -37,7 +31,7 @@ const View: ({ location }: { location: LocationProps }) => JSX.Element = ({ loca
   };
 
   useEffect(() => {
-    request('/api/config/pathmap').then((response) => {
+    request('/eoffice/api/config/pathmap').then((response) => {
       if (response.success) {
         setPathmap(response.data);
       }
@@ -51,7 +45,7 @@ const View: ({ location }: { location: LocationProps }) => JSX.Element = ({ loca
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 14 }}
           onFinish={async (values) => {
-            request('/api/resource/share', {
+            request('/eoffice/api/resource/share', {
               requestType: 'form',
               method: 'POST',
               data: {

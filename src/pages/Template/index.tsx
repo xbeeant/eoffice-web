@@ -3,7 +3,7 @@ import { request } from '@@/plugin-request/request';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import ProTable, { ActionType, ProColumns } from '@ant-design/pro-table';
-import { Button, Popconfirm } from 'antd';
+import { Button, Card, Popconfirm } from 'antd';
 import FileUploadModal from './components/FileUploadModal';
 import { ApiResponse } from '@/typings';
 
@@ -43,10 +43,10 @@ const DetailList: React.FC<DetailListProps> = (props) => {
         <Popconfirm
           title="您确定要删除所选的模板吗？"
           onConfirm={() => {
-            request(`/api/template/${record.tid}`, {
+            request(`/eoffice/api/template/${record.tid}`, {
               method: 'DELETE',
               requestType: 'form',
-            }).then((response: ApiResponse) => {
+            }).then((response: ApiResponse<any>) => {
               if (response.success) {
                 actionRef.current?.reload();
               }
@@ -76,7 +76,7 @@ const DetailList: React.FC<DetailListProps> = (props) => {
         }}
         request={async (params, sorter, filter) => {
           // 表单搜索项会从 params 传入，传递给后端接口。
-          const response = await request('/api/template/table', {
+          const response = await request('/eoffice/api/template/table', {
             params: { ...params, ...sorter, ...filter, cid: category.cid },
             skipErrorHandler: true,
           });
@@ -140,7 +140,7 @@ const CategoryList: React.FC<IPListProps> = (props) => {
       columns={columns}
       request={async (params, sorter, filter) => {
         // 表单搜索项会从 params 传入，传递给后端接口。
-        const response = await request('/api/template/category/table', {
+        const response = await request('/eoffice/api/template/category/table', {
           params: { ...params, ...sorter, ...filter },
           skipErrorHandler: true,
         });
@@ -181,16 +181,18 @@ const Template = () => {
 
   return (
     <PageContainer title={false}>
-      <ProCard split="vertical">
-        <ProCard colSpan="384px" ghost>
-          <CategoryList onChange={(value) => setCategory(value)} />
-        </ProCard>
-        {category && (
-          <ProCard title={category.name}>
-            <DetailList category={category} />
+      <Card>
+        <ProCard split="vertical">
+          <ProCard colSpan="384px" ghost className="left-card">
+            <CategoryList onChange={(value) => setCategory(value)} />
           </ProCard>
-        )}
-      </ProCard>
+          {category && (
+            <ProCard title={category.name}>
+              <DetailList category={category} />
+            </ProCard>
+          )}
+        </ProCard>
+      </Card>
     </PageContainer>
   );
 };

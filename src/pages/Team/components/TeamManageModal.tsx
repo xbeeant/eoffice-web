@@ -17,7 +17,7 @@ const TeamManageModal = ({ visible, onCreate, onCancel, value, type }: TeamManag
   const [folders, setFolders] = useState([]);
 
   const loadFolderTree = () => {
-    return request('/api/team/tree', {
+    return request('/eoffice/api/team/tree', {
       params: { type },
     }).then((response) => {
       setFolders(response);
@@ -38,7 +38,7 @@ const TeamManageModal = ({ visible, onCreate, onCancel, value, type }: TeamManag
         form.validateFields().then((values) => {
           if (value?.gid) {
             // 更新
-            request(`/api/team/${value.gid}`, {
+            request(`/eoffice/api/team/${value.gid}`, {
               method: 'PUT',
               data: {
                 ...values,
@@ -53,7 +53,7 @@ const TeamManageModal = ({ visible, onCreate, onCancel, value, type }: TeamManag
               }
             });
           } else {
-            request('/api/team', {
+            request('/eoffice/api/team', {
               method: 'POST',
               data: {
                 ...values,

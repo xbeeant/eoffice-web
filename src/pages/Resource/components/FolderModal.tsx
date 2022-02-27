@@ -25,7 +25,7 @@ const FolderModal = ({ visible, pfid, onCancel, onOk }: FolderModalProps) => {
       }}
       width={380}
       onFinish={async (values) => {
-        const response = await request('/api/folder', {
+        const response = await request('/eoffice/api/folder', {
           data: { pfid, ...values },
           requestType: 'form',
           method: 'post',

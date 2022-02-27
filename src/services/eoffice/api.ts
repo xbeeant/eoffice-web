@@ -3,31 +3,31 @@
 import {request} from 'umi';
 
 export async function getPathmap() {
-  return request('/api/config/pathmap');
+  return request('/eoffice/api/config/pathmap');
 }
 
-/** 获取当前的用户 GET /api/currentUser */
+/** 获取当前的用户 GET /eoffice/api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
   return request<{
     data: API.CurrentUser;
-  }>('/api/currentUser', {
+  }>('/eoffice/api/currentUser', {
     method: 'GET',
     ...(options || {}),
     skipErrorHandler: true,
   });
 }
 
-/** 退出登录接口 POST /api/login/outLogin */
+/** 退出登录接口 POST /eoffice/api/login/outLogin */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/login/outLogin', {
+  return request<Record<string, any>>('/eoffice/api/login/outLogin', {
     method: 'POST',
     ...(options || {}),
   });
 }
 
-/** 登录接口 POST /api/login/account */
+/** 登录接口 POST /eoffice/api/login/account */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/api/auth/login', {
+  return request<API.LoginResult>('/eoffice/api/auth/login', {
     method: 'POST',
     requestType: 'form',
     data: body,

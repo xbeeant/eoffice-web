@@ -17,7 +17,7 @@ const NewFileModal = ({ visible, fid, type, onCancel, onOk }: FileUploadProps) =
 
   // 加载群组树data
   const loadData = () => {
-    request('/api/template/tree', {
+    request('/eoffice/api/template/tree', {
       params: { type: type },
     }).then((res) => {
       if (!res || res?.length === 0) {
@@ -43,7 +43,7 @@ const NewFileModal = ({ visible, fid, type, onCancel, onOk }: FileUploadProps) =
       width={380}
       onFinish={async (values) => {
         console.log(values);
-        request('/api/resource/add', {
+        request('/eoffice/api/resource/add', {
           method: 'POST',
           requestType: 'form',
           data: {
@@ -59,17 +59,19 @@ const NewFileModal = ({ visible, fid, type, onCancel, onOk }: FileUploadProps) =
         return false;
       }}
     >
-      <Form.Item
-        label="模板"
-        name="cid"
-        rules={[
-          {
-            required: true,
-          },
-        ]}
-      >
-        <TreeSelect treeData={data} />
-      </Form.Item>
+      {data && data.length > 0 && (
+        <Form.Item
+          label="模板"
+          name="cid"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <TreeSelect treeData={data} />
+        </Form.Item>
+      )}
       <ProFormText label="文件名" rules={[{ required: true }]} name="name" />
     </ModalForm>
   );

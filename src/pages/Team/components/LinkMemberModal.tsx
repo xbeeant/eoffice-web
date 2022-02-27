@@ -39,7 +39,7 @@ const LinkMemberModal = ({ visible, onOk, reload, onCancel, gid }: LinkMemberMod
         <a
           key="add"
           onClick={() => {
-            request('/api/team/user', {
+            request('/eoffice/api/team/user', {
               method: 'POST',
               data: { gid, userId: record.uid },
               requestType: 'form',
@@ -65,7 +65,7 @@ const LinkMemberModal = ({ visible, onOk, reload, onCancel, gid }: LinkMemberMod
         columns={columns}
         request={async (params, sorter, filter) => {
           // 表单搜索项会从 params 传入，传递给后端接口。
-          const response = await request('/api/team/user/unlink', {
+          const response = await request('/eoffice/api/team/user/unlink', {
             params: { ...params, ...sorter, ...filter, gid },
             skipErrorHandler: true,
           });

@@ -16,7 +16,7 @@ import { formatSize } from '@/utils/utils';
 import type { MutableRefObject } from 'react';
 import { useEffect, useState } from 'react';
 import { request } from 'umi';
-import ResourceAuthModal from '@/pages/Resource/components/ResourceAuthModal';
+import ResourceAuthModal from './ResourceAuthModal';
 import {
   DeleteTwoTone,
   DownloadOutlined,
@@ -26,7 +26,8 @@ import {
   TeamOutlined,
 } from '@ant-design/icons';
 import type { ActionType } from '@ant-design/pro-table';
-import ResourceShareModal from '@/pages/Resource/components/ResourceShareModal';
+import ResourceShareModal from './ResourceShareModal';
+import VersionHistory from './VersionHistory';
 
 export type InfoDrawerProps = {
   visible: boolean;
@@ -49,6 +50,7 @@ const { Panel } = Collapse;
 const PermInfo = (value: PermTargetProps) => {
   return (
     <Space>
+      <span>已授予：</span>
       {value.edit && <span>编辑</span>}
       {value.download && <span>下载</span>}
       {value.view && <span>查看</span>}
@@ -83,7 +85,7 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
   const [shareModalVisible, setShareModalVisible] = useState<boolean>(false);
 
   const loadData = async () => {
-    const json = await request('/api/resource/info', {
+    const json = await request('/eoffice/api/resource/info', {
       params: {
         rid: value.rid,
       },
@@ -99,6 +101,7 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
 
   return (
     <Drawer
+      width={600}
       title={
         <>
           {editTitleMode ? (
@@ -107,14 +110,14 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
               defaultValue={data.name}
               onBlur={(event) => {
                 const name = event.target.value;
-                request('/api/resource/rename', {
+                request('/eoffice/api/resource/rename', {
                   method: 'POST',
                   requestType: 'form',
                   data: {
                     rid: data.rid,
                     name: name,
                   },
-                }).then((json: ApiResponse) => {
+                }).then((json: ApiResponse<any>) => {
                   if (json.success) {
                     setData({ ...data, ...{ name } });
                     action?.current?.reload();
@@ -147,7 +150,7 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                   <Tooltip title="下载">
                     <DownloadOutlined
                       onClick={() => {
-                        window.open(`/api/resource/s?rid=${value.rid}&sid=${value.sid}`);
+                        window.open(`/eoffice/api/resource/s?rid=${value.rid}&sid=${value.sid}`);
                       }}
                     />
                   </Tooltip>,
@@ -157,13 +160,13 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                   <Popconfirm
                     title="确定删除此文件（夹）嘛?"
                     onConfirm={() => {
-                      request('/api/resource', {
+                      request('/eoffice/api/resource', {
                         method: 'DELETE',
                         requestType: 'form',
                         data: {
                           rid: value.rid,
                         },
-                      }).then((json: ApiResponse) => {
+                      }).then((json: ApiResponse<any>) => {
                         if (json.success) {
                           action?.current?.reload();
                           onClose();
@@ -215,13 +218,18 @@ const InfoDrawer = ({ visible, value, onClose, action }: InfoDrawerProps) => {
                   </Button>
                 }
               >
-                {data.permed?.map((item) => (
-                  <Tooltip title={PermInfo(item)}>
-                    <Tag icon={IconMap[item.targetType]}>{item.targetName}</Tag>
-                  </Tooltip>
-                ))}
+                <Space style={{ flexWrap: 'wrap' }}>
+                  {data.permed?.map((item) => (
+                    <Tooltip title={PermInfo(item)}>
+                      <Tag icon={IconMap[item.targetType]}>{item.targetName}</Tag>
+                    </Tooltip>
+                  ))}
+                </Space>
               </Panel>
             )}
+            <Panel key="history" header="历史信息">
+              <VersionHistory rid={value.rid} />
+            </Panel>
           </Collapse>
           {permModalVisible && (
             <ResourceAuthModal

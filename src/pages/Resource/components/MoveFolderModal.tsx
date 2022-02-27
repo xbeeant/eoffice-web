@@ -1,7 +1,7 @@
 import { Card, Form, TreeSelect } from 'antd';
-import type { MutableRefObject} from 'react';
-import React, { useEffect, useState } from 'react';
-import { ModalForm } from '@ant-design/pro-form';
+import type { MutableRefObject } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ModalForm, ProFormInstance } from '@ant-design/pro-form';
 import { request } from 'umi';
 import type { ActionType } from '@ant-design/pro-table';
 import { layoutActionRef } from '@/app';
@@ -15,13 +15,14 @@ export type MoveFolderProps = {
 };
 const MoveFolderModal = (props: MoveFolderProps) => {
   const { visible, onCancel, fid, rids, actionRef } = props;
+  const formRef = useRef<ProFormInstance>();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const loadFolders = () => {
     setLoading(true);
-    request(`/api/resource/folder`).then((res) => {
+    request(`/eoffice/api/resource/folder`).then((res) => {
       setData(res);
       setLoading(false);
     });
@@ -33,13 +34,15 @@ const MoveFolderModal = (props: MoveFolderProps) => {
 
   return (
     <ModalForm
+      formRef={formRef}
       title="移动位置"
       width={600}
       modalProps={{
         onCancel,
       }}
+      initialValues={{ fid }}
       onFinish={async (values) => {
-        request(`/api/resource/move`, {
+        request(`/eoffice/api/resource/move`, {
           method: 'post',
           requestType: 'form',
           data: {
@@ -59,8 +62,9 @@ const MoveFolderModal = (props: MoveFolderProps) => {
       visible={visible}
     >
       <Card loading={loading} bordered={false} title={false}>
-        <Form.Item name="fid" label="请选择新的文件夹" valuePropName="checked">
+        <Form.Item name="fid" label="请选择新的文件夹">
           <TreeSelect
+            treeLine={true}
             defaultValue={fid}
             treeDefaultExpandAll={true}
             style={{ width: '100%' }}

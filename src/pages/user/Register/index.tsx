@@ -20,7 +20,7 @@ const Register = () => {
             useMode?: string;
           }>
             onFinish={async (values) => {
-              request('/api/user/register', {
+              request('/eoffice/api/user/register', {
                 data: values,
                 requestType: 'form',
                 method: 'POST',

@@ -173,13 +173,13 @@ const ResourceAuthModal = ({
         <Popconfirm
           title="确定要移除该用户的授权嘛?"
           onConfirm={() => {
-            request('/api/resource/perm', {
+            request('/eoffice/api/resource/perm', {
               method: 'DELETE',
               requestType: 'form',
               data: {
                 pid: value.pid,
               },
-            }).then((response: ApiResponse) => {
+            }).then((response: ApiResponse<any>) => {
               if (response.success) {
                 ref.current?.reload();
                 reload();
@@ -211,16 +211,16 @@ const ResourceAuthModal = ({
             initialValues={{ type: 'member' }}
             onFinish={async (values) => {
               // @ts-ignore
-              const response = await request<ApiResponse>('/api/resource/perm', {
+              const response = await request<ApiResponse>('/eoffice/api/resource/perm', {
                 data: { rid, ...values },
                 method: 'POST',
                 requestType: 'form',
               });
               if (response.success) {
-                // @ts-ignore
-                formRef.current?.resetFields({});
-                ref.current?.reload();
                 reload();
+                // @ts-ignore
+                formRef.current?.resetFields();
+                ref.current?.reload();
               }
             }}
           >
@@ -252,7 +252,7 @@ const ResourceAuthModal = ({
                 <DebounceSelect
                   mode="multiple"
                   fetchOptions={(search) => {
-                    return request('/api/user/search', {
+                    return request('/eoffice/api/user/search', {
                       params: {
                         s: search,
                       },
@@ -276,7 +276,7 @@ const ResourceAuthModal = ({
                 name="team"
                 label="群组"
                 request={() => {
-                  return request('/api/team/tree', {
+                  return request('/eoffice/api/team/tree', {
                     params: { type: 1 },
                   });
                 }}
@@ -320,8 +320,8 @@ const ResourceAuthModal = ({
             request={async (params, sorter, filter) => {
               // 表单搜索项会从 params 传入，传递给后端接口。
               console.log(params, sorter, filter);
-              const response = await request('/api/resource/perm', {
-                params: { rid },
+              const response = await request('/eoffice/api/resource/perm', {
+                params: { rid, ...sorter, ...filter, ...params },
               });
               if (!response.success) {
                 return {
