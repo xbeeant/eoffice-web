@@ -1,12 +1,16 @@
 import type { SelectProps } from 'antd';
-import { Form, Modal, Popconfirm, Select, Space, Spin, Tabs } from 'antd';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import ProForm, {
-  ProFormCheckbox,
-  ProFormInstance,
-  ProFormRadio,
-  ProFormSelect,
-} from '@ant-design/pro-form';
+import {
+  Form,
+  Modal,
+  Popconfirm,
+  Select,
+  Space,
+  Spin,
+  Tabs,
+  TreeSelect,
+} from 'antd';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import ProForm, { ProFormCheckbox, ProFormInstance, ProFormRadio } from '@ant-design/pro-form';
 import debounce from 'lodash/debounce';
 import { request } from 'umi';
 import type { ApiResponse, UserProps } from '@/typings';
@@ -22,6 +26,7 @@ import {
   FolderOutlined,
 } from '@ant-design/icons';
 import { PermTargetProps } from '@/typings';
+import { DefaultOptionType } from 'antd/es/select';
 
 export interface DebounceSelectProps<ValueType = any>
   extends Omit<SelectProps<ValueType>, 'options' | 'children'> {
@@ -107,7 +112,13 @@ const ResourceAuthModal = ({
   onCancel: () => void;
   reload: () => void;
 }) => {
-  useEffect(() => {}, [rid]);
+  const [groupList, setGroupList] = useState<DefaultOptionType[]>([]);
+
+  useEffect(() => {
+    request('/eoffice/api/team/tree-all').then((response: DefaultOptionType[]) =>
+      setGroupList(response),
+    );
+  }, [rid]);
   const ref = useRef<ActionType>();
   const formRef = useRef<ProFormInstance<FormProps>>();
   const [type, setType] = useState<string>('member');
@@ -272,17 +283,22 @@ const ResourceAuthModal = ({
               </Form.Item>
             )}
             {type === 'team' && (
-              <ProFormSelect
+              <Form.Item
                 name="team"
                 label="群组"
-                request={() => {
-                  return request('/eoffice/api/team/tree', {
-                    params: { type: 1 },
-                  });
-                }}
-                placeholder="请选择至少一个群组"
+                valuePropName="checked"
                 rules={[{ required: true, message: '请选择至少一个群组!' }]}
-              />
+              >
+                <TreeSelect
+                  treeDefaultExpandAll={true}
+                  showSearch
+                  treeNodeFilterProp="title"
+                  treeLine={true}
+                  style={{ width: '100%' }}
+                  placeholder="请选择至少一个群组"
+                  treeData={groupList}
+                />
+              </Form.Item>
             )}
             <ProFormCheckbox.Group
               name="perm"

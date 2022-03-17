@@ -2,14 +2,11 @@ import { useEffect, useState } from 'react';
 import { request } from 'umi';
 import { Image, Skeleton } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-
-interface LocationProps extends Location {
-  query: { rid: string; share: string; mode: 'view' | 'edit'; shareId: string };
-}
+import { LocationProps } from '@/typings';
 
 const ImageView: ({ location }: { location: LocationProps }) => JSX.Element = ({ location }) => {
   const {
-    query: { rid, share, shareId },
+    query: { rid, share, vid, shareId },
   } = location;
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<{ url?: string; name?: string }>({});
@@ -22,6 +19,7 @@ const ImageView: ({ location }: { location: LocationProps }) => JSX.Element = ({
           rid,
           share,
           shareId,
+          vid,
         },
         skipErrorHandler: true,
       });
@@ -39,19 +37,16 @@ const ImageView: ({ location }: { location: LocationProps }) => JSX.Element = ({
   return (
     <PageContainer title={false} pageHeaderRender={false}>
       {loading && <Skeleton />}
-      {!loading &&
-        (rid || share ? (
-          <div
-            style={{
-              textAlign: 'center',
-              height: '100%',
-            }}
-          >
-            <Image src={data.url} alt={data.name} />
-          </div>
-        ) : (
-          <div>参数不全</div>
-        ))}
+      {!loading && (
+        <div
+          style={{
+            textAlign: 'center',
+            height: '100%',
+          }}
+        >
+          <Image src={data.url} alt={data.name} />
+        </div>
+      )}
     </PageContainer>
   );
 };

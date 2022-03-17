@@ -165,6 +165,9 @@ const ResourceShareModal = ({
           >
             <TreeSelect
               treeDefaultExpandAll={true}
+              showSearch
+              treeNodeFilterProp="title"
+              treeLine={true}
               style={{ width: '100%' }}
               placeholder="请选择至少一个群组"
               treeData={data || []}

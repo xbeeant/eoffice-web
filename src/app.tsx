@@ -8,11 +8,11 @@ import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/eoffice/api';
 import {
+  ContainerOutlined,
   HistoryOutlined,
   HomeOutlined,
   ShareAltOutlined,
   TeamOutlined,
-  ContainerOutlined,
 } from '@ant-design/icons';
 import { message } from 'antd';
 import type { Route } from 'antd/lib/breadcrumb/Breadcrumb';
@@ -208,9 +208,6 @@ export const layout: ({ initialState }: { initialState: any }) => {
       </a>
     ),
     menu: {
-      locale: true,
-      defaultOpenAll: true,
-      ignoreFlatMenu: true,
       // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
       params: {
         userId: initialState?.currentUser?.userid,
@@ -220,7 +217,6 @@ export const layout: ({ initialState }: { initialState: any }) => {
           const response = await requests('/eoffice/api/menu');
           let menus;
           if (response.length === 0) {
-            console.log('no sub menus');
             menus = [
               {
                 path: '/',
@@ -316,7 +312,9 @@ export const layout: ({ initialState }: { initialState: any }) => {
         return (
           <a
             href="#"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               history.push(route.path);
             }}
           >

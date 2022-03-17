@@ -64,9 +64,11 @@ const MoveFolderModal = (props: MoveFolderProps) => {
       <Card loading={loading} bordered={false} title={false}>
         <Form.Item name="fid" label="请选择新的文件夹">
           <TreeSelect
+            treeDefaultExpandAll={true}
+            showSearch
+            treeNodeFilterProp="title"
             treeLine={true}
             defaultValue={fid}
-            treeDefaultExpandAll={true}
             style={{ width: '100%' }}
             placeholder="请选择新的文件夹"
             treeData={data || []}

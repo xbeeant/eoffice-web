@@ -23,26 +23,6 @@
     ],
   },
   {
-    path: '/pdf',
-    layout: false,
-    microApp: 'pdf',
-  },
-  {
-    path: '/markdown',
-    layout: false,
-    microApp: 'markdown',
-  },
-  {
-    path: '/office',
-    layout: false,
-    microApp: 'office',
-  },
-  {
-    path: '/sheet',
-    layout: false,
-    microApp: 'sheet',
-  },
-  {
     path: '/unkown',
     layout: false,
     component: './Resource/UnkownView',

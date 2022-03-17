@@ -3,19 +3,12 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Card, Popconfirm, Space, Tooltip } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import {
-  DownloadOutlined,
-  EditOutlined,
-  FileOutlined,
-  RollbackOutlined,
-  UploadOutlined,
-} from '@ant-design/icons';
-import { history, request } from 'umi';
+import { DownloadOutlined, EditOutlined, FileOutlined, UploadOutlined } from '@ant-design/icons';
+import { history, request, useModel } from 'umi';
 import type { PopupProps } from './components/Popup';
 import Popup from './components/Popup';
 import { formatSize } from '@/utils/utils';
 import type { ApiResponse, ResourceParamsProps, ResourceProps } from '@/typings';
-import { useModel } from '@@/plugin-model/useModel';
 import InfoDrawerProps from './components/InfoDrawer';
 import MoveFolderModal from './components/MoveFolderModal';
 import { iconMap } from '@/utils/icons';
@@ -25,6 +18,11 @@ import defaultSettings from '../../../config/defaultSettings';
 import ResourceAuthModal from '@/pages/Resource/components/ResourceAuthModal';
 import ResourceShareModal from '@/pages/Resource/components/ResourceShareModal';
 
+const key = defaultSettings.version;
+const hashViewer = {
+  unkown: true,
+  image: true,
+};
 const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   const { params: matchParams } = match;
 
@@ -32,14 +30,22 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
 
   const [pathmap, setPathmap] = useState([]);
   const { initialState, setInitialState } = useModel('@@initialState');
-
   const [fid, setFid] = useState<string>('');
   const [selected, setSelected] = useState<ResourceProps>();
   const [moveModalVisible, setMoveModalVisible] = useState<boolean>(false);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
-  const [fileModalVisible, setFileModalVisible] = useState(false);
+  const [overwriteFileModalVisible, setOverwriteFileModalVisible] = useState(false);
   const [permModalVisible, setPermModalVisible] = useState<boolean>(false);
   const [shareModalVisible, setShareModalVisible] = useState<boolean>(false);
+
+  const [fileModalVisible, setFileModalVisible] = useState(false);
+
+  useEffect(() => {
+    const isViewed = localStorage.getItem(key);
+    if (!isViewed) {
+      // setShowIntroduction(true);
+    }
+  }, []);
 
   const [popup, setPopup] = useState<PopupProps>({
     fid: matchParams?.fid,
@@ -57,7 +63,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     // @ts-ignore
     const breadcrumbs = await initialState?.fetchBreadcrumb();
     if (breadcrumbs) {
-      await setInitialState((s) => ({
+      await setInitialState((s: any) => ({
         ...s,
         breadcrumbs: breadcrumbs,
       }));
@@ -66,11 +72,16 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   };
 
   const view = (mode: string, value: ResourceProps) => {
-    window.open(
-      `${defaultSettings.basepath}/${pathmap[value.extension] || 'unkown'}?rid=${value.rid}&sid=${
-        value.sid
-      }&k=${initialState?.currentUser?.userid}&mode=${mode}`,
-    );
+    const viewer = pathmap[value.extension] || 'unkown';
+    if (hashViewer[viewer]) {
+      window.open(
+        `${defaultSettings.basepath}/#/eoffice/${viewer}?rid=${value.rid}&sid=&k=${initialState?.currentUser?.userid}&mode=${mode}`,
+      );
+    } else {
+      window.open(
+        `${defaultSettings.basepath}/${viewer}?rid=${value.rid}&sid=&k=${initialState?.currentUser?.userid}&mode=${mode}`,
+      );
+    }
   };
 
   const columns: ProColumns<ResourceProps>[] = [
@@ -78,7 +89,6 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
       title: (
         <Space direction="horizontal">
           <span>操作</span>
-          {fid && <RollbackOutlined onClick={() => history.goBack()} />}
         </Space>
       ),
       width: 120,
@@ -115,7 +125,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
                 onClick={(event) => {
                   event.stopPropagation();
                   setSelected(record);
-                  setFileModalVisible(true);
+                  setOverwriteFileModalVisible(true);
                 }}
               />
             </Tooltip>
@@ -181,12 +191,14 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
   ];
 
   useEffect(() => {
-    request('/eoffice/api/config/pathmap').then((response) => {
-      if (response.success) {
-        setPathmap(response.data);
-        ref?.current?.reload();
-      }
-    });
+    request('/eoffice/api/config/pathmap').then(
+      (response: { success: boolean; data: React.SetStateAction<never[]> }) => {
+        if (response.success) {
+          setPathmap(response.data);
+          ref?.current?.reload();
+        }
+      },
+    );
     refreshBreadcrumb();
     setFid(matchParams.fid);
   }, [matchParams]);
@@ -195,6 +207,14 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
     if (matchParams.fid) {
       return (
         <>
+          <Button
+            onClick={(event) => {
+              event.stopPropagation();
+              setFileModalVisible(true);
+            }}
+          >
+            上传文件
+          </Button>
           <Button
             onClick={(event) => {
               event.stopPropagation();
@@ -212,7 +232,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
 
   // @ts-ignore
   return (
-    <PageContainer extra={renderExtra()}>
+    <PageContainer extra={renderExtra()} title={false}>
       <Card
         onContextMenu={(event) => {
           event.preventDefault();
@@ -344,7 +364,7 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           }}
         />
       )}
-      {selected && !fileModalVisible && (
+      {selected && !overwriteFileModalVisible && (
         <InfoDrawerProps
           action={ref}
           visible={selected !== undefined}
@@ -362,24 +382,36 @@ const Resource: React.ReactNode = ({ match }: ResourceParamsProps) => {
           onCancel={() => setMoveModalVisible(false)}
         />
       )}
-      {fileModalVisible && (
+      {overwriteFileModalVisible && (
         <FileUploadModal
           action={'/eoffice/api/resource/upload/overwrite'}
           fid={fid || '0'}
           rid={selected?.rid}
-          visible={fileModalVisible}
+          visible={overwriteFileModalVisible}
           onCancel={() => {
             setSelected(undefined);
-            setFileModalVisible(false);
+            setOverwriteFileModalVisible(false);
           }}
           onOk={() => {
             setSelected(undefined);
+            ref?.current?.reload();
+            setOverwriteFileModalVisible(false);
+          }}
+        />
+      )}
+      <Popup {...popup} />
+      {fileModalVisible && (
+        <FileUploadModal
+          action={'/eoffice/api/resource/upload/save'}
+          fid={fid || '0'}
+          visible={fileModalVisible}
+          onCancel={() => setFileModalVisible(false)}
+          onOk={() => {
             ref?.current?.reload();
             setFileModalVisible(false);
           }}
         />
       )}
-      <Popup {...popup} />
     </PageContainer>
   );
 };

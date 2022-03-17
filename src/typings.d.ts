@@ -25,6 +25,13 @@ export type ApiResponse<T> = {
   code: number;
 };
 
+export type ModalProps<T> = {
+  visible: boolean;
+  onOk?: () => void;
+  onCancel: () => void;
+  value: T | undefined;
+};
+
 export type ShareProps = {
   extension: string;
   share: string;
@@ -86,9 +93,17 @@ export type VersionHistoryProps = {
   actor: string;
   createAt: string;
   size: number;
+  rid: string | number;
+  sid: string | number;
+  vid: string | number;
+  extension: string;
 };
 
 export type VersionHistoryPageProps = {
   list: VersionHistory[];
   pagination: PaginationProps;
 };
+
+interface LocationProps extends Location {
+  query: { rid: string; vid: string; share: string; mode: 'view' | 'edit'; shareId: string };
+}

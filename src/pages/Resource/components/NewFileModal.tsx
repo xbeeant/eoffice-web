@@ -69,7 +69,13 @@ const NewFileModal = ({ visible, fid, type, onCancel, onOk }: FileUploadProps) =
             },
           ]}
         >
-          <TreeSelect treeData={data} />
+          <TreeSelect
+            treeDefaultExpandAll={true}
+            showSearch
+            treeNodeFilterProp="title"
+            treeLine={true}
+            treeData={data}
+          />
         </Form.Item>
       )}
       <ProFormText label="文件名" rules={[{ required: true }]} name="name" />

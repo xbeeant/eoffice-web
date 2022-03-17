@@ -44,7 +44,7 @@ const Share = () => {
   const columns: ProColumns<ShareResourceProps>[] = [
     {
       title: '文件名',
-      dataIndex: 'resource.name',
+      dataIndex: 'name',
       sorter: {
         multiple: 1,
       },

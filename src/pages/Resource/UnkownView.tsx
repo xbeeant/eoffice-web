@@ -2,14 +2,11 @@ import { useEffect, useState } from 'react';
 import { request } from 'umi';
 import { Result, Skeleton } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-
-interface LocationProps extends Location {
-  query: { rid: string; share: string };
-}
+import { LocationProps } from '@/typings';
 
 const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = ({ location }) => {
   const {
-    query: { rid, share },
+    query: { rid, vid, share },
   } = location;
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
@@ -21,6 +18,7 @@ const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = (
       const response = await request('/eoffice/api/resource/detail', {
         params: {
           rid,
+          vid,
           share,
         },
         skipErrorHandler: true,
@@ -55,7 +53,7 @@ const UnkownView: ({ location }: { location: LocationProps }) => JSX.Element = (
   return (
     <PageContainer title={false} pageHeaderRender={false}>
       {loading && <Skeleton />}
-      {!loading && (rid || share ? renderResult() : <div>参数不全</div>)}
+      {!loading && renderResult()}
     </PageContainer>
   );
 };

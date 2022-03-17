@@ -16,7 +16,7 @@ const FileUploadModal = ({ visible, fid, rid, onCancel, action, onOk }: FileUplo
       file: any[];
     }>
       visible={visible}
-      title="上传文件"
+      title={rid ? '覆盖文件' : '上传文件'}
       autoFocusFirstInput
       modalProps={{
         onCancel,

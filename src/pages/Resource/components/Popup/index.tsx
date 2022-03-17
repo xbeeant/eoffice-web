@@ -88,18 +88,11 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
                 actionRef?.current?.reload();
                 layoutActionRef?.current?.reload();
                 break;
-              case 'add-docx':
-              case 'add-xlsx':
-              case 'add-pptx':
-              case 'add-md':
-              case 'add-sheet':
-              case 'add-drawio':
+              default:
                 const type = e.key.substring(4);
                 setNewFileType(type);
                 setNewFileFileModalVisible(true);
                 break;
-              default:
-                console.warn('默认行为');
             }
           }}
         >
@@ -126,8 +119,11 @@ const Popup = ({ fid, actionRef, visible, x, y }: PopupProps) => {
             <Menu.Item key="add-sheet" icon={<FileExcelOutlined />}>
               在线表格
             </Menu.Item>
+            <Menu.Item key="add-minder" icon={<FileExcelOutlined />}>
+              在线脑图
+            </Menu.Item>
             <Menu.Item key="add-drawio" icon={<FileExcelOutlined />}>
-              UML
+              UML图（drawio)
             </Menu.Item>
           </SubMenu>
           <Menu.Item key="reload" icon={<ReloadOutlined />}>
