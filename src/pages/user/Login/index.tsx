@@ -2,7 +2,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, message } from 'antd';
 import React, { useState } from 'react';
 import { LoginForm, ProFormText } from '@ant-design/pro-form';
-import { FormattedMessage, history, Link, SelectLang, useIntl, useModel } from 'umi';
+import { FormattedMessage, history, Link, useIntl, useModel } from 'umi';
 import Footer from '@/components/Footer';
 import { login } from '@/services/eoffice/api';
 
@@ -74,12 +74,8 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.lang} data-lang>
-        {SelectLang && <SelectLang />}
-      </div>
       <div className={styles.content}>
         <LoginForm
-          logo={<img alt="logo" style={{ width: '50px' }} src="/favicon.ico" />}
           title={defaultSettings.title || ''}
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
