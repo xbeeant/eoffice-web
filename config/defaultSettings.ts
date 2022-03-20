@@ -17,9 +17,9 @@ const Settings: LayoutSettings & {
   colorWeak: false,
   title: 'eOffice',
   pwa: false,
-  logo: '../public/logo.png',
   iconfontUrl: '',
   basepath: '/eoffice',
+  logo: '/eoffice/public/logo.png',
   version: '1.0.0',
 };
 

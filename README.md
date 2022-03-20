@@ -1,7 +1,6 @@
 # eoffice web
-eoffice应用的前端。eoffice 致力于打造一套在线、多人实时协同办公的系统，支持word，Excel，PPT，UML，markdown等文件的编辑、预览、pdf的在线预览。
 
-eoffice web 采用ant design 组件库，使用ant design pro基础框架结合qiankun框架将各个文件类型的渲染通过子应用的方式进行接入。
+eoffice应用前端，负责应用的主要操作（文件管理、分享、授权等），eoffice的各个类型的文件渲染、查看器通过使用qiankun框架进行接入，让整个项目的文件渲染微服务化。 后台服务api参看eoffice-server项目。
 
 ## 环境准备
 
