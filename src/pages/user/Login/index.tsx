@@ -73,7 +73,7 @@ const Login: React.FC = () => {
   const { status } = userLoginState;
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} id="login">
       <div className={styles.content}>
         <LoginForm
           title={defaultSettings.title || ''}

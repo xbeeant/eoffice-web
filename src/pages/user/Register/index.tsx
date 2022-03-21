@@ -11,7 +11,7 @@ import { Link } from 'umi';
 const Register = () => {
   const [finished, setFinished] = useState<boolean>(false);
   return (
-    <div className={styles.container}>
+    <div className={styles.container} id="register">
       <div className={styles.content}>
         <Card extra={<Link to="/login">返回登录</Link>}>
           {!finished && (
